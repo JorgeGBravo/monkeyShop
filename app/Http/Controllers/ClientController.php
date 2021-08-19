@@ -66,24 +66,47 @@ class ClientController extends Controller
 
 function updateClient(Request $request)
 {
+    log::info('estoy en updateclient');
+    log::info($request);
+
     $cif = $request->input('cif');
     $name = $request->input('name');
     $surname = $request->input('surname');
+/*
+    log::info(isset($name));
+    if ( isset($name) ) {
+        return 'Hola';
+    }
+    else{
+        return 'else';
+    }*/
+
+
+    if((isset($name)) && isset($surname)){
+        log::info('estoy en name y surname');
+        log::info($surname);
+
+        DB::select('update clients set name ="'.$name.'", surname ="'.$surname.'", mCIdUser ="'.Auth::id().'" where cif="'.$cif.'"');
+        return "Update Client CIF: ".$cif. " new name: ".$name. " and surname: ".$surname;
+    }
+    if(isset($name)){
+        log::info('estoy en name ');
+        DB::select('update clients set name ="'.$name.'", mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
+        return "Update Client CIF: ".$cif. " new name: ".$name;
+    }
+    if(isset($surname)){
+        log::info('estoy en surname');
+        DB::select('update clients set surname ="'.$surname.'", mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
+        return "Update Client CIF: ".$cif. " new surname: ".$surname;
+    }
+
+}
+
+function updateImage(Request $request)
+{
+    $cif = $request->input('cif');
     $image = $request->input('image');
 
-    if(count($name) !== 0){
-        DB::select('update clients set name ="'.$name.'"and mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
-        return "Update Client CIF: ".$cif. "new name: ".$name;
-    }
-    if(count($surname) !== 0){
-        DB::select('update clients set surname ="'.$surname.'"and mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
-        return "Update Client CIF: ".$cif. "new surname: ".$name;
-
-    }
-    if(count($image) !== 0){
-        DB::select('update clients set image ="'.$image.'"and mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
-        return "Update Client CIF: ".$cif. "a new Photo";
-
-    }
+    DB::select('update clients set image ="'.$image.'"and mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
 }
 }
