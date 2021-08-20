@@ -27,11 +27,11 @@ class CreateUsersTable extends Migration
             $table->timestamps();
         });
 
-        User::create([                                          // create a new user
-            'name' => 'Administrador',
+        User::create([                                          // create a new user administrator
+            'name' => 'Administrator',
             'surname' => 'root',
-            'isAdmin' => '1',
-            'email' => 'administrador@root.com',
+            'isAdmin' => (bool)1,
+            'email' => 'administrator@root.com',
             'password' => Hash::make('admin'),
         ]);
     }
