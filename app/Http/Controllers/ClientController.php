@@ -37,7 +37,8 @@ class ClientController extends Controller
     }
 
 
-    function newAndUpdateClient(Request $request){ // create and actualize a client
+    function newClient(Request $request)                                // create and actualize a client
+    {
 
         $validatedData = $request->validate([                           // validate the data format
             'name' => 'required|string|max:255',
@@ -46,24 +47,21 @@ class ClientController extends Controller
             'image' => 'required|image|dimensions:min_width=200,min_height=200',
         ]);
 
-
         $cif = $request->input('cif');
         $name = $request->input('name');
         $surname = $request->input('surname');
-        $image = $request->input('image');
+        //$image = $request->input('image');
 
         $client = DB::select('select * from clients where  cif ="' . $cif . '"');
 
-        log::info($request);
-        log::info('en new client');
-        //og::info(count($client));
+        log::info($client);
 
+        if (isset($client)) {
 
-        if (count($client) <= 0){
             $path = $validatedData['image']->store('public/storage');      // save image in images
             $url_path = asset($path);
-            log::info($path);
-            log::info($url_path);
+            //log::info($path);
+            //log::info($url_path);
             $data = new Client();
             $data->name = $name;
             $data->surname = $surname;
@@ -72,10 +70,13 @@ class ClientController extends Controller
             $data->idUser = Auth::id();
             $data->mCIdUser = Auth::id();
             $data->save();
+
             return "New registered customer";
 
         }
+
         return "Already registered customer";
+
 
     }
 
@@ -87,14 +88,6 @@ function updateClient(Request $request)
     $cif = $request->input('cif');
     $name = $request->input('name');
     $surname = $request->input('surname');
-/*
-    log::info(isset($name));
-    if ( isset($name) ) {
-        return 'Hola';
-    }
-    else{
-        return 'else';
-    }*/
 
 
     if((isset($name)) && isset($surname)){
