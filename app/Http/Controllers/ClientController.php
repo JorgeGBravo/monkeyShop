@@ -24,18 +24,29 @@ class ClientController extends Controller
         $cif = $request->input('cif');
         $name = $request->input('name');
         $surname = $request->input('surname');
-        $image = $request->input('image');
+        //$image = $request->input('image');
 
-        if (count($cif) !== 0) {
-            return DB::select('select all from clients where cif ="' . $cif . '"');
+        log::info('en getclient');
+
+        if (isset($cif)) {
+            return DB::select('select * from clients where cif ="' . $cif . '"');
         }
-        return DB::select('select all from clients where name ="' . $name . '"or surname ="' . $surname . '"');
+        return DB::select('select * from clients where name ="' . $name . '"or surname ="' . $surname . '"');
 
 
     }
 
 
     function newAndUpdateClient(Request $request){ // create and actualize a client
+
+        $validatedData = $request->validate([                           // validate the data format
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'cif' => 'required|string|max:255',
+            'image' => 'required|image|dimensions:min_width=200,min_height=200',
+        ]);
+
+
         $cif = $request->input('cif');
         $name = $request->input('name');
         $surname = $request->input('surname');
@@ -44,16 +55,20 @@ class ClientController extends Controller
         $client = DB::select('select * from clients where  cif ="' . $cif . '"');
 
         log::info($request);
-        log::info($client);
-        log::info(count($client));
+        log::info('en new client');
+        //og::info(count($client));
 
 
         if (count($client) <= 0){
+            $path = $validatedData['image']->store('public/storage');      // save image in images
+            $url_path = asset($path);
+            log::info($path);
+            log::info($url_path);
             $data = new Client();
             $data->name = $name;
             $data->surname = $surname;
             $data->cif = $cif;
-            $data->image = $image;
+            $data->image = $path;
             $data->idUser = Auth::id();
             $data->mCIdUser = Auth::id();
             $data->save();
@@ -107,6 +122,6 @@ function updateImage(Request $request)
     $cif = $request->input('cif');
     $image = $request->input('image');
 
-    DB::select('update clients set image ="'.$image.'"and mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
+    DB::select('update clients set image ="'.$image.'", mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
 }
 }
