@@ -25,6 +25,11 @@ Route::middleware('auth:sanctum')->post('/clients/addClient', [ClientController:
 
 Route::middleware('auth:sanctum')->post('/clients/updateClient', [ClientController::class, 'updateClient']);
 
+Route::middleware('auth:sanctum')->post('/clients/deleteClient', [ClientController::class, 'deleteClient']);    //
+
+Route::middleware('auth:sanctum')->post('/clients/updateImageClient', [ClientController::class, 'updateImage']);
+
+
 
 
 

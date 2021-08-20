@@ -80,41 +80,69 @@ class ClientController extends Controller
 
     }
 
-function updateClient(Request $request)
-{
-    log::info('estoy en updateclient');
-    log::info($request);
+    function updateClient(Request $request)
+    {
+        log::info('estoy en updateclient');
+        log::info($request);
 
-    $cif = $request->input('cif');
-    $name = $request->input('name');
-    $surname = $request->input('surname');
+        $cif = $request->input('cif');
+        $name = $request->input('name');
+        $surname = $request->input('surname');
 
 
-    if((isset($name)) && isset($surname)){
-        log::info('estoy en name y surname');
-        log::info($surname);
+        if ((isset($name)) && isset($surname)) {
+            log::info('estoy en name y surname');
+            log::info($surname);
 
-        DB::select('update clients set name ="'.$name.'", surname ="'.$surname.'", mCIdUser ="'.Auth::id().'" where cif="'.$cif.'"');
-        return "Update Client CIF: ".$cif. " new name: ".$name. " and surname: ".$surname;
+            DB::select('update clients set name ="' . $name . '", surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '" where cif="' . $cif . '"');
+            return "Update Client CIF: " . $cif . " new name: " . $name . " and surname: " . $surname;
+        }
+        if (isset($name)) {
+            log::info('estoy en name ');
+            DB::select('update clients set name ="' . $name . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+            return "Update Client CIF: " . $cif . " new name: " . $name;
+        }
+        if (isset($surname))
+        {
+            log::info('estoy en surname');
+            DB::select('update clients set surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+            return "Update Client CIF: " . $cif . " new surname: " . $surname;
+        }
+
     }
-    if(isset($name)){
-        log::info('estoy en name ');
-        DB::select('update clients set name ="'.$name.'", mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
-        return "Update Client CIF: ".$cif. " new name: ".$name;
+
+    function deleteClient(Request $request)
+    {
+        $validatedData = $request->validate([                           // validate the data format
+            'cif' => 'required|string|max:255',
+        ]);
+        $cif = $request->input('cif');
+        $client = DB::select('select * from clients where  cif ="' . $cif . '"');
+        if (isset($client))
+        {
+            DB::select('delete from clients where cif ="'.$cif.'"');
+            return "the user has been deleted";
+        }
+
     }
-    if(isset($surname)){
-        log::info('estoy en surname');
-        DB::select('update clients set surname ="'.$surname.'", mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
-        return "Update Client CIF: ".$cif. " new surname: ".$surname;
+
+    function updateImage(Request $request)
+    {
+        $validatedData = $request->validate([                           // validate the data format
+            'cif' => 'required|string|max:255',
+            'image' => 'required|image|dimensions:min_width=200,min_height=200',
+        ]);
+
+        $cif = $request->input('cif');
+        $client = DB::select('select * from clients where  cif ="' . $cif . '"');
+        log::info($client);
+
+        if (isset($client))
+        {
+            $path = $validatedData['image']->store('public/storage');      // save image in images
+            return DB::select('update clients set image ="' . $path . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+        }
+
+        return 'user with cif:' . $cif . ', does not exist';
     }
-
-}
-
-function updateImage(Request $request)
-{
-    $cif = $request->input('cif');
-    $image = $request->input('image');
-
-    DB::select('update clients set image ="'.$image.'", mCIdUser ="'.Auth::id().'"where cif="'.$cif.'"');
-}
 }
