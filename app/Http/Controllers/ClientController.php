@@ -64,8 +64,6 @@ class ClientController extends Controller
 
             $path = $validatedData['image']->store('public/storage');      // save image in images
             $url_path = asset($path);
-            //log::info($path);
-            //log::info($url_path);
             $data = new Client();
             $data->name = $name;
             $data->surname = $surname;

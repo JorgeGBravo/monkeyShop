@@ -18,7 +18,7 @@ class CreateClientsTable extends Migration
             $table->string('name');
             $table->string('surname');
             $table->string('cif')->unique();
-            $table->longText('image');
+            $table->longText('image')->nullable();
             $table->string('idUser');
             $table->string('mCIdUser')->useCurrentOnUpdate(); // save the ID of the last user who modified the client.
             $table->timestamps();

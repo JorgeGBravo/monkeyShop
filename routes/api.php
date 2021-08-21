@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->post('/users/register', [AuthController::clas
 
 Route::post('/users/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->post('/clients/changePassword', [AuthController::class, 'changePassword']);
+Route::middleware('auth:sanctum')->post('/users/changePassword', [AuthController::class, 'changePassword']);
 
 Route::middleware('auth:sanctum')->post('/clients/addClient', [ClientController::class, 'newClient']);
 

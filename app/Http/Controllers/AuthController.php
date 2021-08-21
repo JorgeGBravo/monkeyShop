@@ -25,7 +25,7 @@ class AuthController extends Controller
             'surname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'isAdmin' => 'nullable|bool'
+            'isAdmin' => 'nullable|bool',
         ]);
 
         $user = User::create([                                          // create a new user
@@ -68,21 +68,25 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-        $validatedData = $request->validate([                           // validate the data format
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'newPassword' => 'required|string|min:8',
-        ]);
+        $password = Hash::make($request->input('password'));
+        $email = $request->input('email');
+        log::info($password);
+        log::info($email);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json([
-                'message' => 'Invalid login details'
-            ], 401);
+        $user = DB::select('select * from users where email="'.$email.'"and password="'.$password.'"');
+        //$user = User::where($email, $password)->get();
+
+        log::info($user);
+
+        if($user[0]->email === $request->input('email'))
+        {
+            DB::select('update users set password ="' . Hash::make($request->input('newPassword')) . '"where id="'.Auth::id().'"');
+
+            return 'Updated Password';
         }
 
-        DB::select('update users set password ="' . Hash::make($validatedData['newPassword']) . '"');
+        return 'The data entered is incorrect';
 
-        return 'Updated Password';
     }
 
     public function changeIsAdmin(Request $request)
@@ -97,6 +101,8 @@ class AuthController extends Controller
         log::info($validatedData['name']);
 
         $isAdmin = DB::select('select isAdmin from users where "' . $validatedData['id'] . '"and name = "'.$validatedData['name'].'"');
+
+
 
         if (auth()->user()->isAdmin === 1) {
             if($isAdmin[0]->isAdmin === 0){
