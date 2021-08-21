@@ -163,6 +163,9 @@ class ClientController extends Controller
         log::info($client);
 
         if (isset($client)) {
+            $old_path = public_path().$client[0]->image;
+            unlink($old_path);
+
             $path = $validatedData['image']->store('public/storage');      // save image in images
             return DB::select('update clients set image ="' . $path . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
         }

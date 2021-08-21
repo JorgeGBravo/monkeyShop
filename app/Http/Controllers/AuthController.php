@@ -14,9 +14,9 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $admin = DB::select('select isAdmin from users where id ="' . Auth::id() . '"');
 
-        if ($admin[0]->isAdmin === 0) {
+        if (auth()->user()->isAdmin === 0) {
+
             return 'You do not have Administrator permissions';
         }
 
@@ -25,6 +25,7 @@ class AuthController extends Controller
             'surname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'isAdmin' => 'nullable|bool'
         ]);
 
         $user = User::create([                                          // create a new user
@@ -32,18 +33,23 @@ class AuthController extends Controller
             'surname' => $validatedData['surname'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
+            'isAdmin' => $validatedData['isAdmin'],
         ]);
+        return "This User is Created". $user;
 
+/*
         $token = $user->createToken('auth_token')->plainTextToken;      // generate a new token for user
 
         return response()->json([                                       // return a json with new Token
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
+*/
     }
 
     public function login(Request $request)                             // verification email and password match some user, in this case
     {
+        //log::info($request);
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'message' => 'Invalid login details'
@@ -79,6 +85,30 @@ class AuthController extends Controller
         return 'Updated Password';
     }
 
+    public function changeIsAdmin(Request $request)
+    {
+        $validatedData = $request->validate([                           // validate the data format
+            'id' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+        ]);
 
+        log::info(auth()->user()->isAdmin);
+        log::info($validatedData['id']);
+        log::info($validatedData['name']);
+
+        $isAdmin = DB::select('select isAdmin from users where "' . $validatedData['id'] . '"and name = "'.$validatedData['name'].'"');
+
+        if (auth()->user()->isAdmin === 1) {
+            if($isAdmin[0]->isAdmin === 0){
+
+                DB::select('update users set isAdmin = 1 where "' . $validatedData['id'] . '"and name = "'.$validatedData['name'].'"');
+                return 'User is now Administrator';
+            }
+
+            DB::select('update users set isAdmin = 0 where "' . $validatedData['id'] . '"and name = "'.$validatedData['name'].'"');
+            return 'The user is no longer an administrator';
+
+        }
+    }
 
 }
