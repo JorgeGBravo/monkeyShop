@@ -7,7 +7,7 @@
 </p>
 
 # API REST destinado a un CRM para la administración clientes
-¡Bienvenido a la mejor la primera API que he desarrollado!
+¡Bienvenido a esta mi primera API Rest!
 
 MonkeyShop es una API basada en [Laravel](https://laravel.com/), con plenas competencias de uso para la administración de datos de usuarios y clientes, que sirve como Back-End para el desarrollo de un CRM seguro y estable.
 
