@@ -75,7 +75,8 @@ En este punto decribiremos de forma sencilla las rutas que se han desarrollado p
 
 - **[[post]]()** 
   http://www.monkeyShop.com/api/users/login?email={email}&password={password} Acceso al sistema devuelve el token.
-  ````{
+  ````
+  {
   "access_token": "2|AZr5h99GJZgU0U6rxaDSOtnBYoIzJTthKi7lFI0F",
   "token_type": "Bearer"
   }
@@ -97,7 +98,8 @@ En este punto decribiremos de forma sencilla las rutas que se han desarrollado p
 - **[[get]]()** http://127.0.0.1:8000/api/clients/list
     Retorna la lista de clientes.
 
-    ````[
+    ````
+  [
     {
     "idClient": 1,
     "name": "Tomas",
@@ -124,7 +126,8 @@ En este punto decribiremos de forma sencilla las rutas que se han desarrollado p
     ````
 
 - **[[get]]()** http://127.0.0.1:8000/api/clients/client?cif={cif}&name={name}&surname={surname} Devuelve el cliente según el dato aportado.
-  ````[
+  ````
+  [
   {
   "idClient": 11,
   "name": "name",
