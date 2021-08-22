@@ -35,19 +35,11 @@ class AuthController extends Controller
             'password' => Hash::make($validatedData['password']),
             'isAdmin' => $validatedData['isAdmin'],
         ]);
-        return "This User is Created". $user;
+        return $user;
 
-/*
-        $token = $user->createToken('auth_token')->plainTextToken;      // generate a new token for user
-
-        return response()->json([                                       // return a json with new Token
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ]);
-*/
     }
 
-    public function login(Request $request)                             // verification email and password match some user, in this case
+    public function login(Request $request)
     {
         //log::info($request);
         if (!Auth::attempt($request->only('email', 'password'))) {
@@ -68,24 +60,19 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-        $password = Hash::make($request->input('password'));
+
         $email = $request->input('email');
-        log::info($password);
-        log::info($email);
 
-        $user = DB::select('select * from users where email="'.$email.'"and password="'.$password.'"');
-        //$user = User::where($email, $password)->get();
-
+        $user = DB::select('select * from users where email="' . $email . '"and id="' .Auth::id(). '"');
         log::info($user);
 
-        if($user[0]->email === $request->input('email'))
-        {
-            DB::select('update users set password ="' . Hash::make($request->input('newPassword')) . '"where id="'.Auth::id().'"');
+        if ($user[0]->email === $request->input('email')) {
+            DB::select('update users set password ="' . Hash::make($request->input('newPassword')) . '"where id="' . Auth::id() . '"');
 
             return 'Updated Password';
         }
 
-        return 'The data entered is incorrect';
+        return 'You are not a registered user, your token is not in the system.';
 
     }
 
@@ -100,18 +87,17 @@ class AuthController extends Controller
         log::info($validatedData['id']);
         log::info($validatedData['name']);
 
-        $isAdmin = DB::select('select isAdmin from users where "' . $validatedData['id'] . '"and name = "'.$validatedData['name'].'"');
-
+        $isAdmin = DB::select('select isAdmin from users where "' . $validatedData['id'] . '"and name = "' . $validatedData['name'] . '"');
 
 
         if (auth()->user()->isAdmin === 1) {
-            if($isAdmin[0]->isAdmin === 0){
+            if ($isAdmin[0]->isAdmin === 0) {
 
-                DB::select('update users set isAdmin = 1 where "' . $validatedData['id'] . '"and name = "'.$validatedData['name'].'"');
+                DB::select('update users set isAdmin = 1 where "' . $validatedData['id'] . '"and name = "' . $validatedData['name'] . '"');
                 return 'User is now Administrator';
             }
 
-            DB::select('update users set isAdmin = 0 where "' . $validatedData['id'] . '"and name = "'.$validatedData['name'].'"');
+            DB::select('update users set isAdmin = 0 where "' . $validatedData['id'] . '"and name = "' . $validatedData['name'] . '"');
             return 'The user is no longer an administrator';
 
         }

@@ -17,9 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 /* ------------------------------ Post Routes --------------------------------*/
 
-Route::middleware('auth:sanctum')->post('/users/register', [AuthController::class, 'register']);   // route of authentication User whit controller AuthController.
-
 Route::post('/users/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->post('/users/register', [AuthController::class, 'register']);   // route of authentication User whit controller AuthController.
 
 Route::middleware('auth:sanctum')->post('/users/changePassword', [AuthController::class, 'changePassword']);
 
@@ -37,8 +37,6 @@ Route::middleware('auth:sanctum')->post('/users/changeRole', [AuthController::cl
 
 
 /* ------------------------------ Get Routes ---------------------------------*/
-
-
 
 
 

@@ -22,9 +22,7 @@ class ClientController extends Controller
         $cif = $request->input('cif');
         $name = $request->input('name');
         $surname = $request->input('surname');
-        //$image = $request->input('image');
 
-        log::info('en getclient');
 
         if (isset($cif)) {
             return DB::select('select * from clients where cif ="' . $cif . '"');
@@ -34,7 +32,7 @@ class ClientController extends Controller
 
     }
 
-    function newClient(Request $request)                                // create and actualize a client
+    function newClient(Request $request)
     {
         $admin = DB::select('select isAdmin from users where id ="' . Auth::id() . '"');
 
@@ -50,20 +48,16 @@ class ClientController extends Controller
         ]);
 
         $cif = $request->input('cif');
-
-
         $name = $request->input('name');
         $surname = $request->input('surname');
-        //$image = $request->input('image');
 
         $client = DB::select('select * from clients where  cif ="' . $cif . '"');
 
-        log::info($client);
 
         if (isset($client)) {
 
             $path = $validatedData['image']->store('public/storage');      // save image in images
-            $url_path = asset($path);
+            //$url_path = asset($path);
             $data = new Client();
             $data->name = $name;
             $data->surname = $surname;
@@ -78,7 +72,6 @@ class ClientController extends Controller
         }
 
         return "Already registered customer";
-
 
     }
 
@@ -161,7 +154,7 @@ class ClientController extends Controller
         log::info($client);
 
         if (isset($client)) {
-            $old_path = public_path().$client[0]->image;
+            $old_path = public_path() . $client[0]->image;
             unlink($old_path);
 
             $path = $validatedData['image']->store('public/storage');      // save image in images
