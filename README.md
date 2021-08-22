@@ -15,8 +15,8 @@ Tecnologias utilizadas:
 
 - [PHP 7.4.16](https://www.php.net/)
 - [Laravel](https://laravel.com/) version 8.55.0.
-- - [Laravel Sanctum](https://laravel.com/docs/8.x/sanctum#introduction).
-- - [Laravel Breeze](https://laravel.com/docs/8.x/starter-kits#laravel-breeze).
+  - [Laravel Sanctum](https://laravel.com/docs/8.x/sanctum#introduction).
+  - [Laravel Breeze](https://laravel.com/docs/8.x/starter-kits#laravel-breeze).
 - [Composer](https://getcomposer.org/) version 2.0.7.
 
 
