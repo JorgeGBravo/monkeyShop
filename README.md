@@ -7,9 +7,9 @@
 </p>
 
 # API REST destinado a un CRM para la administración clientes
-¡Bienvenido a la mejor la primera API he desarrollado!
+¡Bienvenido a la mejor la primera API que he desarrollado!
 
-MonkeyShop es una API basada en [Laravel](https://laravel.com/), con plenas competencias de uso para la administración de datos de usuarios y clientes, de forma que cualquier desarrollador Front-end pueda desarrollar un CRM de forma segura y estable.
+MonkeyShop es una API basada en [Laravel](https://laravel.com/), con plenas competencias de uso para la administración de datos de usuarios y clientes, de forma que cualquier desarrollador Front-end pueda desarrollar un CRM de manera segura y estable.
 
 Tecnologias utilizadas:
 
@@ -23,18 +23,18 @@ Tecnologias utilizadas:
 
 ## Descripción
 
-La API se ha desarrollado usando Laravel Sanctun como servicio de autentificación y tokenización, el servicio contiene un semillero para probar de forma sencilla su funcionamiento.
+La API se ha desarrollado usando Laravel Sanctun como servicio de autentificación y tokenización. El servicio contiene un semillero para probar de forma sencilla su funcionamiento.
 
 En siguientes apartados se detallará lo necesario para su instalación.
 
 ## Instalación
 
-En la máquina a clonar deberá tener instalado [Composer](https://getcomposer.org/).
+La máquina en la que se va a clonar el repositorio deberá tener instalado [Composer](https://getcomposer.org/).
 
-Una vez clonado el repositorio se actualizará Composer con el siguiente comando:
+Clonado el repositorio debe actualizarse Composer con el siguiente comando:
 - ````$ composer update```` Actualizará las dependencias.
 - Crear una base de datos para la administración de los mismos.
-- A partir del archivo [.env.example]() craremos uno igual en contenido y llamalo [.env]().
+- A partir del archivo [.env.example]() debe crearse uno igual en contenido y nombrarlo [.env]().
 - Introducir los datos pertinentes teniendo en cuenta:
   ````DB_CONNECTION=mysql
   DB_HOST=127.0.0.1
@@ -43,25 +43,25 @@ Una vez clonado el repositorio se actualizará Composer con el siguiente comando
   DB_USERNAME=root
   DB_PASSWORD=
   ````
-  #### Migración elegiremos que vamos a usar con o sin datos.
+  #### Migración, deberá elegir el uso que se le va a da; con o sin datos.
 - ````$ php artisan migrate```` Realizaremos la migración de tablas en la Base de Datos.
 
-- ````$  php artisan migrate:fresh --seed```` Con ello activaremos el semillero con 10 usuarios y 10 clientes.
+- ````$  php artisan migrate:fresh --seed```` Activaremos el semillero con 10 usuarios y 10 clientes.
 
-- 
--  ````$ php artisan serve```` Con ello activamos el servidor Laravel según el entorno que estemos utilizando.
 
-Una vez hecho los anteriores pasos ya debería estar...
+-  ````$ php artisan serve```` Arranco el servidor Laravel según el entorno que estemos utilizando.
+
+Ejecutados los pasos indicados ya debería estar activa...
 ### ¿Listo para comenzar? ¡Excelente!
 Debemos de tener en cuenta varias cuestiones.
 - El entorno de datos se ha realizado de la siguiente forma:
-    - **Usuarios:**
+    - ###Usuarios:
       - Name.
       - Surname.
       - isAdmin. --bool-- nos asignará servicios de creación de usuarios nuevos, cambios de rol, creacion y actualización de clientes.
-      - email. Con el lo utilizaremos para la obtención de los TOkEN de autorización.
+      - email. Se usará para la obtención de los TOkEN de autorización.
       - password. Cifrado en la Base de Datos con un Hash.
-    - **Clientes:**
+    - ###Clientes:
         - Name.
         - Surname.
         - cif. Este dato será único para cada cliente y se tomará como referencia.
@@ -69,8 +69,9 @@ Debemos de tener en cuenta varias cuestiones.
         - idUser. Llevará la id del usuario que ha creado el cliente.
         - mCIdUser. Obtendrá la id del último usuario que ha actualizado al cliente.
 
-    
-Aquí describiré las rutas que se han desarrollado para su uso.
+
+##Rutas
+En este punto decribiremos de forma sencilla las rutas que se han desarrollado para su uso.
 
 - **[[post]]()** 
   http://www.monkeyShop.com/api/users/login?email={email}&password={password} Acceso al sistema devuelve el token.
@@ -139,7 +140,7 @@ Aquí describiré las rutas que se han desarrollado para su uso.
   ````
  
 - **[[post]]()** http://127.0.0.1:8000/api/clients/updateClient?name={name}&surname={surname}&cif=12345
-Actualizaremos los datos del cliente con cif determinado podemos cambia los datos según se requiera uno o los dos.
+Actualizaremos los datos del cliente con cif determinado podemos cambiar los datos según se requiera uno o los dos.
   
     Podremos recibir varios resultados:
 
@@ -155,7 +156,7 @@ Actualizaremos los datos del cliente con cif determinado podemos cambia los dato
 - **[[post]]()** http://127.0.0.1:8000/api/users/changePassword?email={email}&newPassword={newPassword} Cambio de password.
 
 
-- **[[post]]()** http://127.0.0.1:8000/api/users/changeRole?id={id}&name={name} Los datos introducidos son del usuario a cambiar el role, hay que tener en cuenta que solo los usuarios administradores autentificados tienen poder de cambio.
+- **[[post]]()** http://127.0.0.1:8000/api/users/changeRole?id={id}&name={name} Los datos introducidos son del usuario a cambiar el rol, hay que tener en cuenta que solo los usuarios administradores autentificados tienen poder de cambio.
     - ````User is now Administrator````
     - ````The user is no longer an administrator````
   
@@ -180,9 +181,11 @@ Actualizaremos los datos del cliente con cif determinado podemos cambia los dato
 
 ## Seguridad
 
-Las autorizaciones de usuarios se realizan por **TOKEN Bearer**. En el proyecto se puede implementar un sistema **OAuth2** con la libreria de Laravel **Passport** construido sobre el servidor *League OAuth2* el cual generará las migraciones necesarias como la implementación de una forma sencilla el sistema.
+Las autorizaciones de usuarios se realizan por **TOKEN Bearer**. 
 
-Se han hecho pruebas de **Inyección SQL**, no han sido exhaustivas, pero han dado un resultado adecuado.
+En el proyecto se puede implementar un sistema **OAuth2** con la librería de Laravel **Passport** construido sobre el servidor *League OAuth2* generará las migraciones necesarias para la implementación de una forma sencilla el sistema.
+
+Se han hecho pruebas de **Inyección SQL**, dando un resultado positivo.
 
 
 ## Documentacion
@@ -196,4 +199,4 @@ Se ha intentado crear un producto acorde a principios de aplicación [12factor](
 
 ## Licencia
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+El marco de Laravel es un software de código abierto con licencia bajo la [MIT license](https://opensource.org/licenses/MIT).
