@@ -9,7 +9,7 @@
 # API REST destinado a un CRM para la administración clientes
 ¡Bienvenido a la mejor la primera API que he desarrollado!
 
-MonkeyShop es una API basada en [Laravel](https://laravel.com/), con plenas competencias de uso para la administración de datos de usuarios y clientes, de forma que cualquier desarrollador Front-end pueda desarrollar un CRM de manera segura y estable.
+MonkeyShop es una API basada en [Laravel](https://laravel.com/), con plenas competencias de uso para la administración de datos de usuarios y clientes, que sirve como Back-End para el desarrollo de un CRM seguro y estable.
 
 Tecnologias utilizadas:
 
@@ -33,17 +33,18 @@ La máquina en la que se va a clonar el repositorio deberá tener instalado [Com
 
 Clonado el repositorio debe actualizarse Composer con el siguiente comando:
 - ````$ composer update```` Actualizará las dependencias.
-- Crear una base de datos para la administración de los mismos.
+- Crear una base de datos MySql o MariaDB.
 - A partir del archivo [.env.example]() debe crearse uno igual en contenido y nombrarlo [.env]().
-- Introducir los datos pertinentes teniendo en cuenta:
-  ````DB_CONNECTION=mysql
+- Introducir los datos de conexion a la BD:
+  ````
+  DB_CONNECTION=mysql
   DB_HOST=127.0.0.1
   DB_PORT=3306
   DB_DATABASE=apimonkeyshop
   DB_USERNAME=root
   DB_PASSWORD=
   ````
-  #### Migración, deberá elegir el uso que se le va a da; con o sin datos.
+  #### Migración, deberá elegir el uso que se le va a dar, con o sin datos.
 - ````$ php artisan migrate```` Realizaremos la migración de tablas en la Base de Datos.
 
 - ````$  php artisan migrate:fresh --seed```` Activaremos el semillero con 10 usuarios y 10 clientes.
@@ -51,17 +52,18 @@ Clonado el repositorio debe actualizarse Composer con el siguiente comando:
 
 -  ````$ php artisan serve```` Arranco el servidor Laravel según el entorno que estemos utilizando.
 
-Ejecutados los pasos indicados ya debería estar activa...
+Ejecutados los pasos indicados ya debería estar ejecutando...
 ### ¿Listo para comenzar? ¡Excelente!
 Debemos de tener en cuenta varias cuestiones.
 - El entorno de datos se ha realizado de la siguiente forma:
-    - ###Usuarios:
+
+    - **Usuarios:**
       - Name.
       - Surname.
       - isAdmin. --bool-- nos asignará servicios de creación de usuarios nuevos, cambios de rol, creacion y actualización de clientes.
       - email. Se usará para la obtención de los TOkEN de autorización.
       - password. Cifrado en la Base de Datos con un Hash.
-    - ###Clientes:
+    - **Clientes:**
         - Name.
         - Surname.
         - cif. Este dato será único para cada cliente y se tomará como referencia.
@@ -70,18 +72,27 @@ Debemos de tener en cuenta varias cuestiones.
         - mCIdUser. Obtendrá la id del último usuario que ha actualizado al cliente.
 
 
-##Rutas
+## Rutas
 En este punto describiremos de forma sencilla las rutas que se han desarrollado para su uso.
 
-Tendrán que tener que la información suministrada en las llamadas se enviará como parte del body de la siguiente forma. Adjuntando los datos requeridos según cada petición en un JSON.
+En las peticiones **POST** los parámetros son enviados dentro del body en forma de **JSON**.
+
+
+### /api/users/login 
+##### solicitud
+Parámetros:
+- email
+- password
+
+**[[post]]()** 
+  http://www.monkeyShop.com/api/users/login. 
 ````
 {
 "email": "email@gmail.com",
 "password": "password"
 }
 ````
-- **[[post]]()** 
-  http://www.monkeyShop.com/api/users/login. Requiere de email y password y devuelve el Token de la siguiente forma.
+##### respuesta
 
   ````
   {
@@ -89,24 +100,149 @@ Tendrán que tener que la información suministrada en las llamadas se enviará 
   "token_type": "Bearer"
   }
   ````
-- **[[post]]()**
-  http://127.0.0.1:8000/api/users/register. Requiere de name, surname, email, password, isAdmin.
-    ````  
-    {"name":"name","surname":"surname","email":"email","isAdmin":"1","updated_at":"2021-08-21T15:16:09.000000Z","created_at":"2021-08-21T15:16:09.000000Z","id":3}
-
-    ````
-- **[[post]]()** http://127.0.0.1:8000/api/clients/addClient Requiere el uso de por lo menos uno de los siguientes datos cif, nombre y apellidos.
-
-    Nos retornará uno de estos resultados:
-    - ````New registered customer```` 
-    - ````Already registered customer````
 
 
-- **[[get]]()** http://127.0.0.1:8000/api/clients/list
-    Retorna la lista de clientes.
+### /api/users/register
+##### solicitud
+Parámetros:
+- name
+- surname
+- email
+- password
+- isAdmin, si se omite, se asignará como no administrador.
 
-    ````
-  [
+ **[[post]]()**
+  http://www.monkeyShop.com/api/users/register.
+
+````
+{
+"name": "name",
+"surname": "surname",
+"email": "email@gmail.com",
+"password": "password"
+"isAdmin": "0"
+}
+````
+##### respuesta
+
+````    
+    {
+    "name":"name",
+    "surname":"surname",
+    "email":"email",
+    "isAdmin":"1",
+    "updated_at":"2021-08-21T15:16:09.000000Z",
+    "created_at":"2021-08-21T15:16:09.000000Z",
+    "id":3
+    }
+   ````
+
+
+### /api/users/changePassword
+##### solicitud
+Parámetros:
+- email
+- newPassword
+
+Además de los datos el usuario deberá estar autenticado.
+
+**[[post]]()** http://www.monkeyShop.com/api/users/changePassword  Cambio de password.
+````
+{
+"email": "email@gmail.com",
+"password": "password"
+}
+````
+
+##### respuesta
+Podremos recibir varios resultados:
+
+````
+Updated Password
+        o
+You are not a registered user, your token is not in the system
+````
+
+
+### /api/users/changeRole
+##### solicitud
+Parámetros:
+- idUser
+- name
+
+Solo los usuarios administradores autentificados tienen poder de cambio.
+
+**[[post]]()** http://www.monkeyShop.com/api/users/changeRole
+
+````
+{
+"idUser": "1",
+"name": "name"
+}
+````
+##### respuesta
+Podremos recibir varios resultados:
+
+````
+    User is now Administrator
+                o
+    The user is no longer an administrator
+````
+
+
+### /api/users/user
+##### solicitud
+**[[get]]()** http://www.monkeyShop.com/api/users/user
+
+
+  ````
+  {
+  "id": 2,
+  "name": "Jorge",
+  "surname": "surname",
+  "isAdmin": 0,
+  "email": "Jorge@gmail.com",
+  "email_verified_at": null,
+  "created_at": null,
+  "updated_at": null
+  }
+  ````
+
+
+### /api/clients/addClient
+##### solicitud
+Parámetros:
+- cif
+- name
+- surname
+
+Requiere el uso de al menos un dato.
+
+**[[post]]()** http://www.monkeyShop.com/api/clients/addClient
+
+````    
+    {
+    "cif":"cif",
+    "name":"name",
+    "surname":"surname",
+    }
+````
+##### respuesta
+
+    New registered customer 
+                o
+    Already registered customer
+
+
+
+### /api/clients/list
+##### solicitud
+
+**[[get]]()** http://www.monkeyShop.com/api/clients/list
+##### respuesta
+
+
+````[
     {
     "idClient": 1,
     "name": "Tomas",
@@ -130,9 +266,29 @@ Tendrán que tener que la información suministrada en las llamadas se enviará 
     "updated_at": null
     },...
     ]
-    ````
+````
 
-- **[[get]]()** http://127.0.0.1:8000/api/clients/client?cif={cif}&name={name}&surname={surname} Requiere cif, name y surname, y devuelve el cliente según el dato aportado.
+
+### /api/clients/client
+##### solicitud
+Parámetros:
+- cif
+- name
+- surname
+
+
+**[[get]]()** http://www.monkeyShop.com/api/clients/client
+
+````    
+    {
+    "cif":"cif",
+    "name":"name",
+    "surname":"surname",
+    }
+````
+
+##### respuesta
+Devuelve el cliente según el dato aportado.
   ````
   [
   {
@@ -148,46 +304,70 @@ Tendrán que tener que la información suministrada en las llamadas se enviará 
   }
   ]
   ````
- 
-- **[[post]]()** http://127.0.0.1:8000/api/clients/updateClient Requiere de name, surname y cif.
-Hay que tener en cuenta que actualizaremos los datos del cliente con respecto al cif aportado y podemos cambiar los datos según se requiera uno o los dos.
-  
-    Podremos recibir varios resultados:
-
-    - ````You do not have Administrator permissions````
-    - ````Update Client CIF: cif new name: name and surname: surname```` 
-
-        Este tipo de mensaje lo recibiremos dependiendo que dato hayamos enviado.
 
 
-- **[[post]]()** http://127.0.0.1:8000/api/clients/updateImageClient Se subirá, actualizará y borrará imagen anterior del cliente con cif enviado. Se adjuntará a la petición el archivo *.jpg *.png con dimenciones :min_width=200,min_height=200.
+### /api/clients/updateClient
+##### solicitud
+Parámetros:
+- cif
+- name
+- surname
+
+**[[get]]()** http://www.monkeyShop.com/api/clients/updateClient
+
+````    
+    {
+    "cif":"cif",  //el cif se toma siempre como referencia para la actualizacion
+    "name":"name",
+    "surname":"surname",
+    }
+````
+##### respuesta
+Podremos recibir varios resultados:
+
+- ````You do not have Administrator permissions````
+- ````Update Client CIF: cif new name: name and surname: surname```` 
+
+Este tipo de mensaje lo recibiremos dependiendo que dato hayamos enviado.
 
 
-- **[[post]]()** http://127.0.0.1:8000/api/users/changePassword  Cambio de password. Requerirá el email y newPassword además de estar autenticado.
+
+### /api/clients/updateImageClient
+##### solicitud
+Parámetros:
+- cif
+- image
+
+Subirá, actualizará y borrará imagen anterior del cliente con cif enviado.
+
+Se adjuntará a la petición el archivo *.jpg *.png con dimensiones:min_width=200,min_height=200.
+
+**[[post]]()** http://www.monkeyShop.com/api/clients/updateImageClient 
 
 
-- **[[post]]()** http://127.0.0.1:8000/api/users/changeRole Los datos a introducir son del idUser y el name para cambiar el rol y también hay que tener en cuenta que solo los usuarios administradores autentificados tienen poder de cambio.
-    - ````User is now Administrator````
-    - ````The user is no longer an administrator````
-  
 
-- **[[post]]()** http://127.0.0.1:8000/api/clients/deleteClient Borra el cliente con cif suministrado por un usuario autorizado y autenticado.
+### /api/clients/deleteClient
+##### solicitud
+Parámetros:
+- cif
 
+Sólo un usuario con rol de administrador y autenticado puede ejecutarlo
 
-- **[[get]]()** http://127.0.0.1:8000/api/users/user Devuelve el usuario autenticado.
+- **[[post]]()** http://www.monkeyShop.com/api/clients/deleteClient
+````
+{
+"cif": "cif"
+}
+````
+##### respuesta
+Podremos recibir varios resultados:
 
-  ````
-  {
-  "id": 2,
-  "name": "Jorge",
-  "surname": "surname",
-  "isAdmin": 0,
-  "email": "Jorge@gmail.com",
-  "email_verified_at": null,
-  "created_at": null,
-  "updated_at": null
-  }
-  ````
+````
+You do not have Administrator permissions
+            o
+the user has been deleted
+````
+
 
 
 ## Seguridad

@@ -151,7 +151,7 @@ class ClientController extends Controller
 
         $cif = $request->input('cif');
         $client = DB::select('select * from clients where  cif ="' . $cif . '"');
-        log::info($client);
+        //log::info($client);
 
         if (isset($client)) {
             $old_path = public_path() . $client[0]->image;
