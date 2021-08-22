@@ -71,10 +71,18 @@ Debemos de tener en cuenta varias cuestiones.
 
 
 ##Rutas
-En este punto decribiremos de forma sencilla las rutas que se han desarrollado para su uso.
+En este punto describiremos de forma sencilla las rutas que se han desarrollado para su uso.
 
+Tendrán que tener que la información suministrada en las llamadas se enviará como parte del body de la siguiente forma. Adjuntando los datos requeridos según cada petición en un JSON.
+````
+{
+"email": "email@gmail.com",
+"password": "password"
+}
+````
 - **[[post]]()** 
-  http://www.monkeyShop.com/api/users/login?email={email}&password={password} Acceso al sistema devuelve el token.
+  http://www.monkeyShop.com/api/users/login. Requiere de email y password y devuelve el Token de la siguiente forma.
+
   ````
   {
   "access_token": "2|AZr5h99GJZgU0U6rxaDSOtnBYoIzJTthKi7lFI0F",
@@ -82,13 +90,12 @@ En este punto decribiremos de forma sencilla las rutas que se han desarrollado p
   }
   ````
 - **[[post]]()**
-  http://127.0.0.1:8000/api/users/register?name={name}&surname={surname}&email={email}&password={password}&isAdmin={true=1orfalse=0} Acceso al sistema devuelve el token.
-  
+  http://127.0.0.1:8000/api/users/register. Requiere de name, surname, email, password, isAdmin.
     ````  
     {"name":"name","surname":"surname","email":"email","isAdmin":"1","updated_at":"2021-08-21T15:16:09.000000Z","created_at":"2021-08-21T15:16:09.000000Z","id":3}
 
     ````
-- **[[post]]()** http://127.0.0.1:8000/api/clients/addClient?cif={cif}&name={name}&surname={surname}
+- **[[post]]()** http://127.0.0.1:8000/api/clients/addClient Requiere el uso de por lo menos uno de los siguientes datos cif, nombre y apellidos.
 
     Nos retornará uno de estos resultados:
     - ````New registered customer```` 
@@ -125,7 +132,7 @@ En este punto decribiremos de forma sencilla las rutas que se han desarrollado p
     ]
     ````
 
-- **[[get]]()** http://127.0.0.1:8000/api/clients/client?cif={cif}&name={name}&surname={surname} Devuelve el cliente según el dato aportado.
+- **[[get]]()** http://127.0.0.1:8000/api/clients/client?cif={cif}&name={name}&surname={surname} Requiere cif, name y surname, y devuelve el cliente según el dato aportado.
   ````
   [
   {
@@ -142,8 +149,8 @@ En este punto decribiremos de forma sencilla las rutas que se han desarrollado p
   ]
   ````
  
-- **[[post]]()** http://127.0.0.1:8000/api/clients/updateClient?name={name}&surname={surname}&cif=12345
-Actualizaremos los datos del cliente con cif determinado podemos cambiar los datos según se requiera uno o los dos.
+- **[[post]]()** http://127.0.0.1:8000/api/clients/updateClient Requiere de name, surname y cif.
+Hay que tener en cuenta que actualizaremos los datos del cliente con respecto al cif aportado y podemos cambiar los datos según se requiera uno o los dos.
   
     Podremos recibir varios resultados:
 
@@ -153,23 +160,24 @@ Actualizaremos los datos del cliente con cif determinado podemos cambiar los dat
         Este tipo de mensaje lo recibiremos dependiendo que dato hayamos enviado.
 
 
-- **[[post]]()** http://127.0.0.1:8000/api/clients/updateImageClient?cif=cif Se subirá, actualizara y borrará imagen anterior. Se adjuntará a la petición el archivo *.jpg *.png con dimenciones :min_width=200,min_height=200.
+- **[[post]]()** http://127.0.0.1:8000/api/clients/updateImageClient Se subirá, actualizará y borrará imagen anterior del cliente con cif enviado. Se adjuntará a la petición el archivo *.jpg *.png con dimenciones :min_width=200,min_height=200.
 
 
-- **[[post]]()** http://127.0.0.1:8000/api/users/changePassword?email={email}&newPassword={newPassword} Cambio de password.
+- **[[post]]()** http://127.0.0.1:8000/api/users/changePassword  Cambio de password. Requerirá el email y newPassword además de estar autenticado.
 
 
-- **[[post]]()** http://127.0.0.1:8000/api/users/changeRole?id={id}&name={name} Los datos introducidos son del usuario a cambiar el rol, hay que tener en cuenta que solo los usuarios administradores autentificados tienen poder de cambio.
+- **[[post]]()** http://127.0.0.1:8000/api/users/changeRole Los datos a introducir son del idUser y el name para cambiar el rol y también hay que tener en cuenta que solo los usuarios administradores autentificados tienen poder de cambio.
     - ````User is now Administrator````
     - ````The user is no longer an administrator````
   
 
-- **[[post]]()** http://127.0.0.1:8000/api/clients/deleteClient?cif={cif} Borra el cliente por un usuario autorizado y autenticado.
+- **[[post]]()** http://127.0.0.1:8000/api/clients/deleteClient Borra el cliente con cif suministrado por un usuario autorizado y autenticado.
 
 
 - **[[get]]()** http://127.0.0.1:8000/api/users/user Devuelve el usuario autenticado.
 
-  ````{
+  ````
+  {
   "id": 2,
   "name": "Jorge",
   "surname": "surname",
