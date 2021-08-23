@@ -147,7 +147,6 @@ class ClientController extends Controller
         if ($admin[0]->isAdmin === 0) {
             return 'You do not have Administrator permissions';
         }
-        log::info($request);
         $validatedData = $request->validate([                           // validate the data format
             'cif' => 'required|string|max:255',
             'image' => 'required|image|dimensions:min_width=200,min_height=200',
@@ -158,22 +157,38 @@ class ClientController extends Controller
 
 
         if (count($client) != 0) {
-            log::info($client);
             $imageClient = $client[0]->image;
-            log::info(
-                'imagenCiente'.$imageClient);
+
             if($imageClient == null){
-                log::info('sin imagen');
+
                 $path = $validatedData['image']->store('public/images');      // save image in images
-                DB::select('update clients set image ="' . $path . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+
+                $urlExplode = explode('/', $path);
+                $pathSource = 'storage';
+                $urlExplode[0] = $pathSource;
+                $newUrlPath = implode('/', $urlExplode);
+
+
+
+                DB::select('update clients set image ="' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
                 return 'Image entered';
             }
+            $urlExplode = explode('/', $imageClient);
+            $pathSource = 'public';
+            $urlExplode[0] = $pathSource;
+            $newPathImage = implode('/', $urlExplode);
 
-            Storage::delete($imageClient);
-
+            Storage::delete($newPathImage);
             $path = $validatedData['image']->store('public/images');      // save image in images
-            DB::select('update clients set image ="' . $path . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
-            return 'Updated image';
+
+            $urlExplode = explode('/', $path);
+            $pathSource = 'storage';
+            $urlExplode[0] = $pathSource;
+            $newUrlPath = implode('/', $urlExplode);
+
+
+            DB::select('update clients set image ="' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+            return 'Updated image '. Storage::url($imageClient);
         }
 
         return 'User with cif:' . $cif . ', does not exist';
