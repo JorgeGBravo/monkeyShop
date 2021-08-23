@@ -323,7 +323,7 @@ Parámetros:
 - name
 - surname
 
-**[[get]]()** http://www.monkeyShop.com/api/clients/updateClient
+**[[post]]()** http://www.monkeyShop.com/api/clients/updateClient
 
 ````    
     {

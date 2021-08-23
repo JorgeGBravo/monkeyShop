@@ -88,42 +88,33 @@ class ClientController extends Controller
             return 'You do not have Administrator permissions';
         }
 
-        $validatedData = $request->validate([                           // validate the data format
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'cif' => 'required|string|max:255',
-        ]);
-
 
         $cif = $request->input('cif');
         $name = $request->input('name');
         $surname = $request->input('surname');
 
-        $client = DB::select('select * from clients where cif="'.$validatedData['cif'].'"');
-        log::info($client);
-        log::info(count($client));
+        $client = DB::select('select * from clients where cif="'.$cif.'"');
 
         if(count($client) != 0){
 
             if ((isset($name)) && isset($surname)) {
-                log::info('estoy en name y surname');
 
                 DB::select('update clients set name ="' . $name . '", surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '" where cif="' . $cif . '"');
                 return "Update Client CIF: " . $cif . " new name: " . $name . " and surname: " . $surname;
             }
             if (isset($name)) {
-                log::info('estoy en name ');
+
                 DB::select('update clients set name ="' . $name . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
                 return "Update Client CIF: " . $cif . " new name: " . $name;
             }
             if (isset($surname)) {
-                log::info('estoy en surname');
+
                 DB::select('update clients set surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
                 return "Update Client CIF: " . $cif . " new surname: " . $surname;
             }
 
         }
-        return 'the client with cif: '.$validatedData['cif'].' does not exist';
+        return 'the client with cif: '.$cif.' does not exist';
 
     }
 
