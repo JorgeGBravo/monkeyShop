@@ -29,7 +29,7 @@ En siguientes apartados se detallará lo necesario para su instalación.
 
 Tened en cuenta que una vez migrado tendrás un usuario administrador con las siguientes credenciales, con el que poder interactuar.
 
-    name:       Administrador
+    name:       Administrator
     surname:    root
     email:      administrator@root.com
 
