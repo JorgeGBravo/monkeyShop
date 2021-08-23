@@ -99,24 +99,31 @@ class ClientController extends Controller
         $name = $request->input('name');
         $surname = $request->input('surname');
 
+        $client = DB::select('select * from clients where cif="'.$validatedData['cif'].'"');
+        log::info($client);
+        log::info(count($client));
 
-        if ((isset($name)) && isset($surname)) {
-            log::info('estoy en name y surname');
-            log::info($surname);
+        if(count($client) != 0){
 
-            DB::select('update clients set name ="' . $name . '", surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '" where cif="' . $cif . '"');
-            return "Update Client CIF: " . $cif . " new name: " . $name . " and surname: " . $surname;
+            if ((isset($name)) && isset($surname)) {
+                log::info('estoy en name y surname');
+
+                DB::select('update clients set name ="' . $name . '", surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '" where cif="' . $cif . '"');
+                return "Update Client CIF: " . $cif . " new name: " . $name . " and surname: " . $surname;
+            }
+            if (isset($name)) {
+                log::info('estoy en name ');
+                DB::select('update clients set name ="' . $name . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                return "Update Client CIF: " . $cif . " new name: " . $name;
+            }
+            if (isset($surname)) {
+                log::info('estoy en surname');
+                DB::select('update clients set surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                return "Update Client CIF: " . $cif . " new surname: " . $surname;
+            }
+
         }
-        if (isset($name)) {
-            log::info('estoy en name ');
-            DB::select('update clients set name ="' . $name . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
-            return "Update Client CIF: " . $cif . " new name: " . $name;
-        }
-        if (isset($surname)) {
-            log::info('estoy en surname');
-            DB::select('update clients set surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
-            return "Update Client CIF: " . $cif . " new surname: " . $surname;
-        }
+        return 'the client with cif: '.$validatedData['cif'].' does not exist';
 
     }
 

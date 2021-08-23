@@ -337,6 +337,7 @@ Podremos recibir varios resultados:
 
 - ````You do not have Administrator permissions````
 - ````Update Client CIF: cif new name: name and surname: surname```` 
+- ````the client with cif: cif does not exist```` 
 
 Este tipo de mensaje lo recibiremos dependiendo que dato hayamos enviado.
 
