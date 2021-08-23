@@ -64,7 +64,7 @@ class AuthController extends Controller
         $email = $request->input('email');
 
         $user = DB::select('select * from users where email="' . $email . '"and id="' .Auth::id(). '"');
-        log::info($user);
+
 
         if ($user[0]->email === $request->input('email')) {
             DB::select('update users set password ="' . Hash::make($request->input('newPassword')) . '"where id="' . Auth::id() . '"');
@@ -101,6 +101,7 @@ class AuthController extends Controller
             return 'The user is no longer an administrator';
 
         }
+        return 'Only administrators can make that query';
     }
 
 }

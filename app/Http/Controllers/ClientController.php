@@ -34,6 +34,7 @@ class ClientController extends Controller
 
     function newClient(Request $request)
     {
+        log::info('estoy');
         $admin = DB::select('select isAdmin from users where id ="' . Auth::id() . '"');
 
         if ($admin[0]->isAdmin === 0) {
@@ -44,25 +45,23 @@ class ClientController extends Controller
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
             'cif' => 'required|string|max:255',
-            'image' => 'required|image|dimensions:min_width=200,min_height=200',
         ]);
 
         $cif = $request->input('cif');
         $name = $request->input('name');
         $surname = $request->input('surname');
 
-        $client = DB::select('select * from clients where  cif ="' . $cif . '"');
+        $client = DB::select('select * from clients where  cif ="' . $validatedData['cif'] . '"');
 
+        if (count($client) == 0) {
 
-        if (isset($client)) {
-
-            $path = $validatedData['image']->store('public/storage');      // save image in images
+            //$path = $validatedData['image']->store('public/storage');      // save image in images
             //$url_path = asset($path);
             $data = new Client();
-            $data->name = $name;
-            $data->surname = $surname;
-            $data->cif = $cif;
-            $data->image = $path;
+            $data->name = $validatedData['name'];
+            $data->surname = $validatedData['surname'];
+            $data->cif = $validatedData['cif'];
+            //$data->image = $path;
             $data->idUser = Auth::id();
             $data->mCIdUser = Auth::id();
             $data->save();

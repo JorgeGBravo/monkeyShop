@@ -125,7 +125,7 @@ Parámetros:
 "name": "name",
 "surname": "surname",
 "email": "email@gmail.com",
-"password": "password"
+"password": "password",
 "isAdmin": "0"
 }
 ````
@@ -156,7 +156,7 @@ Además de los datos el usuario deberá estar autenticado.
 ````
 {
 "email": "email@gmail.com",
-"password": "password"
+"newPassword": "password"
 }
 ````
 
@@ -182,7 +182,7 @@ Solo los usuarios administradores autentificados tienen poder de cambio.
 
 ````
 {
-"idUser": "1",
+"id": "1",
 "name": "name"
 }
 ````
@@ -193,6 +193,8 @@ Podremos recibir varios resultados:
     User is now Administrator
                 o
     The user is no longer an administrator
+                o
+    Only administrators can make that query
 ````
 
 
@@ -238,6 +240,8 @@ Requiere el uso de al menos un dato.
     New registered customer 
                 o
     Already registered customer
+                o
+    You do not have Administrator permissions
 
 
 
