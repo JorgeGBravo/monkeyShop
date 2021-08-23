@@ -232,7 +232,7 @@ Requiere el uso de al menos un dato.
     {
     "cif":"cif",
     "name":"name",
-    "surname":"surname",
+    "surname":"surname"
     }
 ````
 ##### respuesta
@@ -293,7 +293,7 @@ Parámetros:
     {
     "cif":"cif",
     "name":"name",
-    "surname":"surname",
+    "surname":"surname"
     }
 ````
 

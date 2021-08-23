@@ -25,9 +25,19 @@ class ClientController extends Controller
 
 
         if (isset($cif)) {
+
             return DB::select('select * from clients where cif ="' . $cif . '"');
         }
-        return DB::select('select * from clients where name ="' . $name . '"or surname ="' . $surname . '"');
+        if (isset($name)){
+
+            return DB::select('select * from clients where name ="' . $name . '"');
+        }
+        if (isset($surname)){
+
+            return DB::select('select * from clients where surname ="' . $surname . '"');
+        }
+
+        return DB::select('select * from clients where name ="' . $name . '"and surname ="' . $surname . '"');
 
 
     }
@@ -46,10 +56,6 @@ class ClientController extends Controller
             'surname' => 'required|string|max:255',
             'cif' => 'required|string|max:255',
         ]);
-
-        $cif = $request->input('cif');
-        $name = $request->input('name');
-        $surname = $request->input('surname');
 
         $client = DB::select('select * from clients where  cif ="' . $validatedData['cif'] . '"');
 
