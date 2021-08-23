@@ -27,6 +27,12 @@ La API se ha desarrollado usando Laravel Sanctun como servicio de autentificaci�
 
 En siguientes apartados se detallará lo necesario para su instalación.
 
+Tened en cuenta que una vez migrado tendrás un usuario administrador con las siguientes credenciales, con el que poder interactuar.
+
+    name:       Administrador
+    surname:    root
+    email:      administrator@root.com
+
 ## Instalación
 
 La máquina en la que se va a clonar el repositorio deberá tener instalado [Composer](https://getcomposer.org/).
