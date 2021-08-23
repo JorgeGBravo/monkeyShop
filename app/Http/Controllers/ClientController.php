@@ -6,7 +6,9 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 
 class ClientController extends Controller
@@ -44,7 +46,6 @@ class ClientController extends Controller
 
     function newClient(Request $request)
     {
-        log::info('estoy');
         $admin = DB::select('select isAdmin from users where id ="' . Auth::id() . '"');
 
         if ($admin[0]->isAdmin === 0) {
@@ -146,7 +147,7 @@ class ClientController extends Controller
         if ($admin[0]->isAdmin === 0) {
             return 'You do not have Administrator permissions';
         }
-
+        log::info($request);
         $validatedData = $request->validate([                           // validate the data format
             'cif' => 'required|string|max:255',
             'image' => 'required|image|dimensions:min_width=200,min_height=200',
@@ -154,16 +155,27 @@ class ClientController extends Controller
 
         $cif = $request->input('cif');
         $client = DB::select('select * from clients where  cif ="' . $cif . '"');
-        //log::info($client);
 
-        if (isset($client)) {
-            $old_path = public_path() . $client[0]->image;
-            unlink($old_path);
 
-            $path = $validatedData['image']->store('public/storage');      // save image in images
-            return DB::select('update clients set image ="' . $path . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+        if (count($client) != 0) {
+            log::info($client);
+            $imageClient = $client[0]->image;
+            log::info(
+                'imagenCiente'.$imageClient);
+            if($imageClient == null){
+                log::info('sin imagen');
+                $path = $validatedData['image']->store('public/images');      // save image in images
+                DB::select('update clients set image ="' . $path . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                return 'Image entered';
+            }
+
+            Storage::delete($imageClient);
+
+            $path = $validatedData['image']->store('public/images');      // save image in images
+            DB::select('update clients set image ="' . $path . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+            return 'Updated image';
         }
 
-        return 'user with cif:' . $cif . ', does not exist';
+        return 'User with cif:' . $cif . ', does not exist';
     }
 }

@@ -355,7 +355,12 @@ Se adjuntará a la petición el archivo *.jpg *.png con dimensiones:min_width=20
 
 **[[post]]()** http://www.monkeyShop.com/api/clients/updateImageClient 
 
-
+##### respuesta
+    Image entered
+         o
+    Updated image
+         o
+    User with cif:' . $cif . ', does not exist
 
 ### /api/clients/deleteClient
 ##### solicitud
