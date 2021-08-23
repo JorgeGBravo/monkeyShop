@@ -39,8 +39,17 @@ La máquina en la que se va a clonar el repositorio deberá tener instalado [Com
 
 Clonado el repositorio debe actualizarse Composer con el siguiente comando:
 - ````$ composer update```` Actualizará las dependencias.
-- Crear una base de datos MySql o MariaDB.
 - A partir del archivo [.env.example]() debe crearse uno igual en contenido y nombrarlo [.env]().
+- ````php artisan key:generate```` generará una key que debemos introducir en [.env]().
+    
+    Ejemplo:
+
+  ````base64:lg1m/12MHBbBpiWTXjot98Q9MP/nSzPrvLEU2beD+2Y=````
+    
+    Introduciremos en el siguiente punto del archivo [.env]():
+
+  ````APP_KEY=base64:Miw8fhT5SLLApIF3PPGAG1XO3XZnebJH3ta2YIFGWyU=````
+- Crear una base de datos MySql o MariaDB.
 - Introducir los datos de conexion a la BD:
   ````
   DB_CONNECTION=mysql
