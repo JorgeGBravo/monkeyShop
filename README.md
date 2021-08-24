@@ -49,6 +49,8 @@ Clonado el repositorio debe actualizarse Composer con el siguiente comando:
     Introduciremos en el siguiente punto del archivo [.env]():
 
   ````APP_KEY=base64:Miw8fhT5SLLApIF3PPGAG1XO3XZnebJH3ta2YIFGWyU=````
+
+
 - Crear una base de datos MySql o MariaDB.
 - Introducir los datos de conexion a la BD:
   ````
@@ -59,13 +61,13 @@ Clonado el repositorio debe actualizarse Composer con el siguiente comando:
   DB_USERNAME=root
   DB_PASSWORD=
   ````
+  
   #### Migración, deberá elegir el uso que se le va a dar, con o sin datos.
 - ````$ php artisan migrate```` Realizaremos la migración de tablas en la Base de Datos.
 
-- ````$  php artisan migrate:fresh --seed```` Activaremos el semillero con 10 usuarios y 10 clientes.
-
-
--  ````$ php artisan serve```` Arranco el servidor Laravel según el entorno que estemos utilizando.
+- ````$ php artisan migrate:fresh --seed```` Activaremos el semillero con 10 usuarios y 10 clientes.
+- ````$ php artisan storage:link```` Generamos un enlace desde 'public/storage' a 'storage/app/public'. Para acceder públicamente a las imágenes en este caso.
+- ````$ php artisan serve```` Arranco el servidor Laravel según el entorno que estemos utilizando.
 
 Ejecutados los pasos indicados ya debería estar ejecutando...
 ### ¿Listo para comenzar? ¡Excelente!

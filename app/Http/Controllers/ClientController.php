@@ -30,11 +30,11 @@ class ClientController extends Controller
 
             return DB::select('select * from clients where cif ="' . $cif . '"');
         }
-        if (isset($name)){
+        if (isset($name)) {
 
             return DB::select('select * from clients where name ="' . $name . '"');
         }
-        if (isset($surname)){
+        if (isset($surname)) {
 
             return DB::select('select * from clients where surname ="' . $surname . '"');
         }
@@ -94,9 +94,9 @@ class ClientController extends Controller
         $name = $request->input('name');
         $surname = $request->input('surname');
 
-        $client = DB::select('select * from clients where cif="'.$cif.'"');
+        $client = DB::select('select * from clients where cif="' . $cif . '"');
 
-        if(count($client) != 0){
+        if (count($client) != 0) {
 
             if ((isset($name)) && isset($surname)) {
 
@@ -115,7 +115,7 @@ class ClientController extends Controller
             }
 
         }
-        return 'the client with cif: '.$cif.' does not exist';
+        return 'the client with cif: ' . $cif . ' does not exist';
 
     }
 
@@ -159,7 +159,7 @@ class ClientController extends Controller
         if (count($client) != 0) {
             $imageClient = $client[0]->image;
 
-            if($imageClient == null){
+            if ($imageClient == null) {
 
                 $path = $validatedData['image']->store('public/images');      // save image in images
 
@@ -177,7 +177,7 @@ class ClientController extends Controller
             $newUrlPath = $this->parseUrlImage($path);
 
             DB::select('update clients set image ="' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
-            return 'Updated image '. Storage::url($imageClient);
+            return 'Updated image ' . Storage::url($imageClient);
         }
 
         return 'User with cif:' . $cif . ', does not exist';
@@ -187,8 +187,7 @@ class ClientController extends Controller
     {
         $urlExplode = explode('/', $path);
 
-        if($urlExplode[0] == 'public')
-        {
+        if ($urlExplode[0] == 'public') {
             $pathSource = 'storage';
             $urlExplode[0] = $pathSource;
             return implode('/', $urlExplode);
