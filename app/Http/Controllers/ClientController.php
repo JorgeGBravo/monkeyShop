@@ -165,19 +165,20 @@ class ClientController extends Controller
 
                 $newUrlPath = $this->parseUrlImage($path);
 
-                DB::select('update clients set image ="' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                DB::select('update clients set image ="'.env('APP_URL').'/'.$newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
                 return 'Image entered';
             }
 
             $newPathImage = $this->parseUrlImage($imageClient);
+            Log::info($newPathImage);
 
             Storage::delete($newPathImage);
             $path = $validatedData['image']->store('public/images');      // save image in images
 
             $newUrlPath = $this->parseUrlImage($path);
 
-            DB::select('update clients set image ="' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
-            return 'Updated image ' . Storage::url($imageClient);
+            DB::select('update clients set image ="'.env('APP_URL').'/'.$newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+            return 'Updated image ';
         }
 
         return 'User with cif:' . $cif . ', does not exist';
@@ -194,7 +195,10 @@ class ClientController extends Controller
         }
 
         $pathSource = 'public';
-        $urlExplode[0] = $pathSource;
+        $urlExplode[0] = '';
+        $urlExplode[1] = '';
+        $urlExplode[2] = '';
+        $urlExplode[3] = $pathSource;
         return implode('/', $urlExplode);
     }
 
