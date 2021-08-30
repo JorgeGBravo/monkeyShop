@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 
 class ClientController extends Controller
@@ -51,33 +52,44 @@ class ClientController extends Controller
         if ($admin[0]->isAdmin === 0) {
             return 'You do not have Administrator permissions';
         }
-
-        $validatedData = $request->validate([                           // validate the data format
+        $validatedData = Validator::make($request->all() ,[
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
-            'cif' => 'required|string|max:255',
+            'cif' => 'required|string|min:6|max:255',
+
         ]);
 
-        $client = DB::select('select * from clients where  cif ="' . $validatedData['cif'] . '"');
+        if($validatedData->fails()) {
+            return $validatedData->getMessageBag()->first();
+        } else {
+            $name = $request->input('name');
+            $surname = $request->input('surname');
+            $cif = $request->input('cif');
 
-        if (count($client) == 0) {
+            $client = DB::select('select * from clients where  cif ="' . $cif . '"');
 
-            //$path = $validatedData['image']->store('public/storage');      // save image in images
-            //$url_path = asset($path);
-            $data = new Client();
-            $data->name = $validatedData['name'];
-            $data->surname = $validatedData['surname'];
-            $data->cif = $validatedData['cif'];
-            //$data->image = $path;
-            $data->idUser = Auth::id();
-            $data->mCIdUser = Auth::id();
-            $data->save();
+            if (count($client) == 0) {
 
-            return "New registered customer";
+                //$path = $validatedData['image']->store('public/storage');      // save image in images
+                //$url_path = asset($path);
+                $data = new Client();
+                $data->name = $name;
+                $data->surname = $surname;
+                $data->cif = $cif;
+                //$data->image = $path;
+                $data->idUser = Auth::id();
+                $data->mCIdUser = Auth::id();
+                $data->save();
+
+                return "New registered customer";
+
+            }
+
+            return "Already registered customer";
 
         }
 
-        return "Already registered customer";
+
 
     }
 
@@ -127,10 +139,6 @@ class ClientController extends Controller
             return 'You do not have Administrator permissions';
         }
 
-        $validatedData = $request->validate([                           // validate the data format
-            'cif' => 'required|string|max:255',
-        ]);
-
         $cif = $request->input('cif');
         $client = DB::select('select * from clients where  cif ="' . $cif . '"');
         if (isset($client)) {
@@ -147,38 +155,44 @@ class ClientController extends Controller
         if ($admin[0]->isAdmin === 0) {
             return 'You do not have Administrator permissions';
         }
-        $validatedData = $request->validate([                           // validate the data format
-            'cif' => 'required|string|max:255',
+
+        $validatedData = Validator::make($request->all(), [
+            'cif' => 'required|string|min:6|max:255',
             'image' => 'required|image|dimensions:min_width=200,min_height=200',
         ]);
 
-        $cif = $request->input('cif');
-        $client = DB::select('select * from clients where  cif ="' . $cif . '"');
+        if ($validatedData->fails()) {
+            return $validatedData->getMessageBag()->first();
+        } else {
+            $cif = $request->input('cif');
+            $image = $request->input('image');
+
+            $client = DB::select('select * from clients where  cif ="' . $cif . '"');
 
 
-        if (count($client) != 0) {
-            $imageClient = $client[0]->image;
+            if (count($client) != 0) {
+                $imageClient = $client[0]->image;
 
-            if ($imageClient == null) {
+                if ($imageClient == null) {
 
-                $path = $validatedData['image']->store('public/images');      // save image in images
+                    $path = $image->store('public/images');      // save image in images
+
+                    $newUrlPath = $this->parseUrlImage($path);
+
+                    DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                    return 'Image entered';
+                }
+
+                $newPathImage = $this->parseUrlImage($imageClient);
+
+                Storage::delete($newPathImage);
+                $path = $image->store('public/images');      // save image in images
 
                 $newUrlPath = $this->parseUrlImage($path);
 
-                DB::select('update clients set image ="'.env('APP_URL').'/'.$newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
-                return 'Image entered';
+                DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                return 'Updated image ';
             }
-
-            $newPathImage = $this->parseUrlImage($imageClient);
-            Log::info($newPathImage);
-
-            Storage::delete($newPathImage);
-            $path = $validatedData['image']->store('public/images');      // save image in images
-
-            $newUrlPath = $this->parseUrlImage($path);
-
-            DB::select('update clients set image ="'.env('APP_URL').'/'.$newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
-            return 'Updated image ';
         }
 
         return 'User with cif:' . $cif . ', does not exist';
