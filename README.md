@@ -117,7 +117,10 @@ Parámetros:
   "token_type": "Bearer"
   }
   ````
+La api tiene un usuario administrador, el cual tendrá las siguientes credenciales.
 
+    . email     => administrator@root.com
+    . password  => admin
 
 ### /api/users/register
 ##### solicitud
