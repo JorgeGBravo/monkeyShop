@@ -19,7 +19,7 @@ class AuthController extends Controller
 
         if (auth()->user()->isAdmin === 0) {
 
-            return 'You do not have Administrator permissions';
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
         }
 
         $validatedData = Validator::make($request->all() ,[
@@ -31,7 +31,7 @@ class AuthController extends Controller
         ]);
 
         if($validatedData->fails()) {
-            return $validatedData->getMessageBag()->first();
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
         } else {
             $name = $request->input('name');
             $surname = $request->input('surname');
@@ -47,7 +47,7 @@ class AuthController extends Controller
                 'password' => Hash::make($password),
                 'isAdmin' => $isAdmin,
             ]);
-            return $user;
+            return response()->json($user, 200);
         }
 
     }
@@ -69,7 +69,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ]);
+        ], 200);
     }
 
     public function changePassword(Request $request)
@@ -83,10 +83,10 @@ class AuthController extends Controller
         if ($user[0]->email === $request->input('email')) {
             DB::select('update users set password ="' . Hash::make($request->input('newPassword')) . '"where id="' . Auth::id() . '"');
 
-            return 'Updated Password';
+            return response()->json(['message' => 'Updated Password'], 200);
         }
 
-        return 'You are not a registered user, your token is not in the system.';
+        return response()->json(['message' => 'You are not a registered user, your token is not in the system.'], 403);
 
     }
 
@@ -99,7 +99,7 @@ class AuthController extends Controller
         ]);
 
         if($validatedData->fails()) {
-            return $validatedData->getMessageBag()->first();
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
         } else {
             $id = $request->input('id');
             $name = $request->input('name');
@@ -112,14 +112,14 @@ class AuthController extends Controller
                 if ($isAdmin[0]->isAdmin === 0) {
 
                     DB::select('update users set isAdmin = 1 where "' . $id . '"and name = "' . $name . '"');
-                    return 'User is now Administrator';
+                    return response()->json(['message' => 'User is now Administrator'], 200);
                 }
 
                 DB::select('update users set isAdmin = 0 where "' . $id . '"and name = "' . $name . '"');
-                return 'The user is no longer an administrator';
+                return response()->json(['message' => 'The user is no longer an administrator'], 200);
 
             }
-            return 'Only administrators can make that query';
+            return response()->json(['message' => 'Only administrators can make that query'], 403);
 
         };
 
