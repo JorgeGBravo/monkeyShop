@@ -50,7 +50,7 @@ class DatabaseSeeder extends Seeder
             DB::table('users')->insert([
                 'name' => $user,
                 'surname' => 'surname',
-                'email' => $user . '@gmail.com',
+                'email' => strtolower($user) . '@gmail.com',
                 'password' => Hash::make('password'),
             ]);
         }
