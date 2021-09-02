@@ -71,13 +71,10 @@ class ClientController extends Controller
 
             if (count($client) == 0) {
 
-                //$path = $validatedData['image']->store('public/storage');      // save image in images
-                //$url_path = asset($path);
                 $data = new Client();
                 $data->name = $name;
                 $data->surname = $surname;
                 $data->cif = $cif;
-                //$data->image = $path;
                 $data->idUser = Auth::id();
                 $data->mCIdUser = Auth::id();
                 $data->save();
@@ -87,7 +84,6 @@ class ClientController extends Controller
             }
 
             return response()->json(['message' => 'Already registered customer'], 409);
-
 
         }
 
@@ -130,20 +126,20 @@ class ClientController extends Controller
                 return response()->json(['message' => ['cif'=> $cif, 'surname' =>$surname]], 201);
 
             }
-
         }
+
         return response()->json(['message' => $cif.'no exist' ], 409);
 
     }
 
     function deleteClient(Request $request)
     {
+
         $admin = DB::select('select isAdmin from users where id ="' . Auth::id() . '"');
 
         if ($admin[0]->isAdmin === 0) {
             return response()->json(['message' => 'You do not have Administrator permissions'], 403);
         }
-
         $cif = $request->input('cif');
 
         $client = DB::select('select * from clients where  cif ="' . $cif . '"');
@@ -158,10 +154,6 @@ class ClientController extends Controller
     function updateImage(Request $request)
     {
         $admin = DB::select('select isAdmin from users where id ="' . Auth::id() . '"');
-
-        log::info($request->allFiles());
-        log::info($request->input());
-        log::info($request->input('image'));
 
         if ($admin[0]->isAdmin === 0) {
             return response()->json(['message' => 'You do not have Administrator permissions'], 403);
@@ -178,40 +170,30 @@ class ClientController extends Controller
 
         } else {
             $cif = $request->input('cif');
-            $intoImage = $request->input('images');
-
+            $intoImage = $request->allFiles()['image'];
 
             $client = DB::select('select * from clients where  cif ="' . $cif . '"');
 
-
             if (count($client) != 0) {
                 $imageClient = $client[0]->image;
-                log::info($client);
-                log::info('------');
-                log::info($intoImage);
 
                 if ($imageClient == null) {
-
                     $path = $intoImage->store('public/images');      // save image in images
-
                     $newUrlPath = $this->parseUrlImage($path);
-
                     DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
-                    return response()->json(['message' =>'Image entered'], 200);
+
+                    return response()->json(['message' =>'Image entered', 'image' => env('APP_URL').'/'.$newUrlPath], 200);
                 }
 
                 $newPathImage = $this->parseUrlImage($imageClient);
-
                 Storage::delete($newPathImage);
-                $path = $validatedData['image']->store('public/images');      // save image in images
-
+                $path = $intoImage->store('public/images');      // save image in images
                 $newUrlPath = $this->parseUrlImage($path);
-
                 DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
-                return response()->json(['message' => 'Updated image'], 200);
+
+                return response()->json(['message' => 'Updated image', 'image' => env('APP_URL').'/'.$newUrlPath], 200);
             }
         }
-
         return response()->json(['message' => 'User with cif:' . $cif . ', does not exist'], 409);
     }
 
