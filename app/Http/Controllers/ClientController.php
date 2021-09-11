@@ -76,7 +76,7 @@ class ClientController extends Controller
                 $data->surname = $surname;
                 $data->cif = $cif;
                 $data->idUser = Auth::id();
-                $data->mCIdUser = Auth::id();
+                $data->lastUserWhoModifiedTheField = Auth::id();
                 $data->save();
 
                 return response()->json(['user' => $data], 201);
@@ -107,21 +107,21 @@ class ClientController extends Controller
 
             if ((isset($name)) && isset($surname)) {
 
-                DB::select('update clients set name ="' . $name . '", surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '" where cif="' . $cif . '"');
+                DB::select('update clients set name ="' . $name . '", surname ="' . $surname . '", lastUserWhoModifiedTheField ="' . Auth::id() . '" where cif="' . $cif . '"');
 
                 return response()->json(['message' => ['cif'=> $cif, 'name'=> $name, 'surname' =>$surname]], 201);
 
             }
             if (isset($name)) {
 
-                DB::select('update clients set name ="' . $name . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                DB::select('update clients set name ="' . $name . '", lastUserWhoModifiedTheField ="' . Auth::id() . '"where cif="' . $cif . '"');
 
                 return response()->json(['message' => ['cif'=> $cif, 'name'=> $name]], 201);
 
             }
             if (isset($surname)) {
 
-                DB::select('update clients set surname ="' . $surname . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                DB::select('update clients set surname ="' . $surname . '", lastUserWhoModifiedTheField ="' . Auth::id() . '"where cif="' . $cif . '"');
 
                 return response()->json(['message' => ['cif'=> $cif, 'surname' =>$surname]], 201);
 
@@ -180,7 +180,7 @@ class ClientController extends Controller
                 if ($imageClient == null) {
                     $path = $intoImage->store('public/images');      // save image in images
                     $newUrlPath = $this->parseUrlImage($path);
-                    DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                    DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", lastUserWhoModifiedTheField ="' . Auth::id() . '"where cif="' . $cif . '"');
 
                     return response()->json(['message' =>'Image entered', 'image' => env('APP_URL').'/'.$newUrlPath], 200);
                 }
@@ -189,7 +189,7 @@ class ClientController extends Controller
                 Storage::delete($newPathImage);
                 $path = $intoImage->store('public/images');      // save image in images
                 $newUrlPath = $this->parseUrlImage($path);
-                DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", mCIdUser ="' . Auth::id() . '"where cif="' . $cif . '"');
+                DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", lastUserWhoModifiedTheField ="' . Auth::id() . '"where cif="' . $cif . '"');
 
                 return response()->json(['message' => 'Updated image', 'image' => env('APP_URL').'/'.$newUrlPath], 200);
             }
