@@ -20,7 +20,7 @@ class CreateClientsTable extends Migration
             $table->string('cif')->unique();
             $table->longText('image')->nullable();
             $table->string('idUser');
-            $table->string('mCIdUser')->useCurrentOnUpdate(); // save the ID of the last user who modified the client.
+            $table->string('lastUserWhoModifiedTheField')->useCurrentOnUpdate(); // save the ID of the last user who modified the client.   mCIdUser
             $table->timestamps();
         });
     }

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+
 
 class AuthController extends Controller
 {
@@ -17,10 +19,10 @@ class AuthController extends Controller
 
         if (auth()->user()->isAdmin === 0) {
 
-            return 'You do not have Administrator permissions';
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
         }
 
-        $validatedData = $request->validate([                           // validate the data format
+        $validatedData = Validator::make($request->all() ,[
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -28,21 +30,33 @@ class AuthController extends Controller
             'isAdmin' => 'nullable|bool',
         ]);
 
-        $user = User::create([                                          // create a new user
-            'name' => $validatedData['name'],
-            'surname' => $validatedData['surname'],
-            'email' => strtolower($validatedData['email']),
-            'password' => Hash::make($validatedData['password']),
-            'isAdmin' => $validatedData['isAdmin'],
-        ]);
-        return $user;
+        if($validatedData->fails()) {
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
+        } else {
+            $name = $request->input('name');
+            $surname = $request->input('surname');
+            $email = $request->input('email');
+            $password = $request->input('password');
+            $isAdmin = $request->input('isAdmin');
+
+
+            $user = User::create([                                          // create a new user
+                'name' => $name,
+                'surname' => $surname,
+                'email' => strtolower($email),
+                'password' => Hash::make($password),
+                'isAdmin' => $isAdmin,
+            ]);
+            return response()->json($user, 200);
+        }
 
     }
 
     public function login(Request $request)
     {
-        log::info($request);
-        if (!Auth::attempt($request->only('email', 'password'))) {
+
+
+        if (!Auth::attempt($request->only(strtolower('email'), 'password'))) {
             return response()->json([
                 'message' => 'Invalid login details'
             ], 401);
@@ -55,13 +69,13 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ]);
+        ], 200);
     }
 
     public function changePassword(Request $request)
     {
 
-        $email = $request->input('email');
+        $email = strtolower($request->input('email'));
 
         $user = DB::select('select * from users where email="' . $email . '"and id="' .Auth::id(). '"');
 
@@ -69,39 +83,49 @@ class AuthController extends Controller
         if ($user[0]->email === $request->input('email')) {
             DB::select('update users set password ="' . Hash::make($request->input('newPassword')) . '"where id="' . Auth::id() . '"');
 
-            return 'Updated Password';
+            return response()->json(['message' => 'Updated Password'], 200);
         }
 
-        return 'You are not a registered user, your token is not in the system.';
+        return response()->json(['message' => 'You are not a registered user, your token is not in the system.'], 403);
 
     }
 
     public function changeIsAdmin(Request $request)
     {
-        $validatedData = $request->validate([                           // validate the data format
+
+        $validatedData = Validator::make($request->all() ,[
             'id' => 'required|string|max:255',
             'name' => 'required|string|max:255',
         ]);
 
-        log::info(auth()->user()->isAdmin);
-        log::info($validatedData['id']);
-        log::info($validatedData['name']);
+        if($validatedData->fails()) {
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
+        } else {
+            $id = $request->input('id');
+            $name = $request->input('name');
 
-        $isAdmin = DB::select('select isAdmin from users where "' . $validatedData['id'] . '"and name = "' . $validatedData['name'] . '"');
+
+            $isAdmin = DB::select('select isAdmin from users where "' . $id . '"and name = "' . $name . '"');
 
 
-        if (auth()->user()->isAdmin === 1) {
-            if ($isAdmin[0]->isAdmin === 0) {
+            if (auth()->user()->isAdmin === 1) {
+                if ($isAdmin[0]->isAdmin === 0) {
 
-                DB::select('update users set isAdmin = 1 where "' . $validatedData['id'] . '"and name = "' . $validatedData['name'] . '"');
-                return 'User is now Administrator';
+                    DB::select('update users set isAdmin = 1 where "' . $id . '"and name = "' . $name . '"');
+                    return response()->json(['message' => 'User is now Administrator'], 200);
+                }
+
+                DB::select('update users set isAdmin = 0 where "' . $id . '"and name = "' . $name . '"');
+                return response()->json(['message' => 'The user is no longer an administrator'], 200);
+
             }
+            return response()->json(['message' => 'Only administrators can make that query'], 403);
 
-            DB::select('update users set isAdmin = 0 where "' . $validatedData['id'] . '"and name = "' . $validatedData['name'] . '"');
-            return 'The user is no longer an administrator';
+        };
 
-        }
-        return 'Only administrators can make that query';
+
+
+
     }
 
 }
