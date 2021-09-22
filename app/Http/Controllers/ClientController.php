@@ -93,18 +93,12 @@ class ClientController extends Controller
 
     function deleteClient(Request $request)
     {
-
-        $admin = DB::select('select isAdmin from users where id ="' . Auth::id() . '"');
-
-        if ($admin[0]->isAdmin === 0) {
-            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
-        }
+        $this->getIsAdmin();
         $cif = $request->input('cif');
-
-        $client = DB::select('select * from clients where  cif ="' . $cif . '"');
+        $client = Client::all()->where('cif', $cif);
 
         if (count($client) != 0) {
-            DB::select('delete from clients where cif ="' . $cif . '"');
+            Client::where('cif', $cif)->delete();
             return response()->json(['message' => 'the user has been deleted'], 200);
         }
         return response()->json(['message' => 'User not exist'], 404);
@@ -112,46 +106,37 @@ class ClientController extends Controller
 
     function updateImage(Request $request)
     {
-        $admin = DB::select('select isAdmin from users where id ="' . Auth::id() . '"');
-
-        if ($admin[0]->isAdmin === 0) {
-            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
-        }
-
+        $this->getIsAdmin();
         $validatedData = Validator::make($request->all(), [
             'cif' => 'required|string|min:6|max:255',
             'image' => 'required|image|dimensions:min_width=200,min_height=200',
         ]);
 
         if ($validatedData->fails()) {
-
             return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
+        }
+        $cif = $request->input('cif');
+        $intoImage = $request->allFiles()['image'];
+        $client = Client::all()->where('cif', $cif);
 
-        } else {
-            $cif = $request->input('cif');
-            $intoImage = $request->allFiles()['image'];
+        if (count($client) != 0) {
+            foreach ($client as $info) {
+                $infoClient = $info;
+            }
+            $imageClient = $infoClient->image;
 
-            $client = DB::select('select * from clients where  cif ="' . $cif . '"');
-
-            if (count($client) != 0) {
-                $imageClient = $client[0]->image;
-
-                if ($imageClient == null) {
-                    $path = $intoImage->store('public/images');      // save image in images
-                    $newUrlPath = $this->parseUrlImage($path);
-                    DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", lastUserWhoModifiedTheField ="' . Auth::id() . '"where cif="' . $cif . '"');
-
-                    return response()->json(['message' =>'Image entered', 'image' => env('APP_URL').'/'.$newUrlPath], 200);
-                }
-
-                $newPathImage = $this->parseUrlImage($imageClient);
-                Storage::delete($newPathImage);
+            if ($imageClient == null) {
                 $path = $intoImage->store('public/images');      // save image in images
                 $newUrlPath = $this->parseUrlImage($path);
-                DB::select('update clients set image ="' . env('APP_URL') . '/' . $newUrlPath . '", lastUserWhoModifiedTheField ="' . Auth::id() . '"where cif="' . $cif . '"');
-
-                return response()->json(['message' => 'Updated image', 'image' => env('APP_URL').'/'.$newUrlPath], 200);
+                Client::where('cif', $cif)->update(['image' => env('APP_URL') . '/' . $newUrlPath, 'lastUserWhoModifiedTheField' => Auth::id()]);
+                return response()->json(['message' => 'Image entered', 'image' => env('APP_URL') . '/' . $newUrlPath], 200);
             }
+            $newPathImage = $this->parseUrlImage($imageClient);
+            Storage::delete($newPathImage);
+            $path = $intoImage->store('public/images');      // save image in images
+            $newUrlPath = $this->parseUrlImage($path);
+            Client::where('cif', $cif)->update(['image' => env('APP_URL') . '/' . $newUrlPath, 'lastUserWhoModifiedTheField' => Auth::id()]);
+            return response()->json(['message' => 'Updated image', 'image' => env('APP_URL') . '/' . $newUrlPath], 200);
         }
         return response()->json(['message' => 'User with cif:' . $cif . ', does not exist'], 409);
     }
@@ -165,7 +150,6 @@ class ClientController extends Controller
             $urlExplode[0] = $pathSource;
             return implode('/', $urlExplode);
         }
-
         $pathSource = 'public';
         $urlExplode[0] = '';
         $urlExplode[1] = '';

@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
                 'surname' => 'surname',
                 'cif' => Str::random(10),
                 'idUser' => random_int(1, 10),
-                'mCIdUser' => random_int(1, 10),
+                'lastUserWhoModifiedTheField' => random_int(1, 10),
             ]);
 
         }

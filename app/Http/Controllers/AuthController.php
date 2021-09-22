@@ -16,10 +16,7 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        if (auth()->user()->isAdmin === 0) {
-            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
-        }
-
+        $this->isAnAdmin();
         $validatedData = Validator::make($request->all() ,[
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
@@ -49,16 +46,11 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         if (!Auth::attempt($request->only(strtolower('email'), 'password'))) {
-            return response()->json([
-                'message' => 'Invalid login details'
-            ], 401);
+            return response()->json(['message' => 'Invalid login details'], 401);
         }
         $user = User::where('email', $request['email'])->firstOrFail();
         $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 200);
+        return response()->json(['access_token' => $token, 'token_type' => 'Bearer'], 200);
     }
 
     public function changePassword(Request $request)
@@ -81,29 +73,25 @@ class AuthController extends Controller
 
     public function changeIsAdmin(Request $request)
     {
-        $validatedData = Validator::make($request->all() ,[
+        $validatedData = Validator::make($request->all(), [
             'id' => 'required|string|max:255',
             'name' => 'required|string|max:255',
         ]);
-        if($validatedData->fails()) {
+        if ($validatedData->fails()) {
             return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
         }
         $id = $request->input('id');
         $name = $request->input('name');
+        $isAdmin = User::select('isAdmin')->where('name', $name)->get();
+        $this->isAnAdmin();
 
-        $isAdmin = User::select('isAdmin')
-            ->where('name', $name)
-            ->get();
-
-        if (auth()->user()->isAdmin === 1) {
-            if ($isAdmin[0]->isAdmin === 0) {
-                DB::select('update users set isAdmin = 1 where "' . $id . '"and name = "' . $name . '"');
-                return response()->json(['message' => 'User is now Administrator'], 200);
-            }
-            DB::select('update users set isAdmin = 0 where "' . $id . '"and name = "' . $name . '"');
-            return response()->json(['message' => 'The user is no longer an administrator'], 200);
+        if ($isAdmin[0]->isAdmin === 0) {
+            DB::select('update users set isAdmin = 1 where "' . $id . '"and name = "' . $name . '"');
+            return response()->json(['message' => 'User is now Administrator'], 200);
         }
-        return response()->json(['message' => 'Only administrators can make that query'], 403);;
+        DB::select('update users set isAdmin = 0 where "' . $id . '"and name = "' . $name . '"');
+        return response()->json(['message' => 'The user is no longer an administrator'], 200);
+
     }
 
 }

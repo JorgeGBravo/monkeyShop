@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use http\QueryString;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -17,8 +18,6 @@ class Controller extends BaseController
 
     public function arrayPositionAuth(){
         $position = Auth::id() - 1;
-        //log::info('position');
-        //log::info($position);
         return $position;
     }
 
@@ -29,6 +28,11 @@ class Controller extends BaseController
         if ($admin[0]->isAdmin === 0) {
             return response()->json(['message' =>'You do not have Administrator permissions'], 403);
         }
-        return $admin;
+    }
+
+    public function isAnAdmin(){
+        if (auth()->user()->isAdmin === 0) {
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
+        }
     }
 }
