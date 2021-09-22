@@ -49,6 +49,16 @@ Route::middleware('auth:sanctum')->get('/clients/client', [ClientController::cla
 
 
 
+Route::get('/prueba', [AuthController::class, 'getUserPrueba']);
+
+
+
+
+
+
+
+
+
 
 
 
