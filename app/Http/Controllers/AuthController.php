@@ -24,9 +24,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8',
             'isAdmin' => 'nullable|bool',
         ]);
-        if ($validatedData->fails()) {
-            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
-        }
+        $this->controllerValidateData($validatedData);
         $name = $request->input('name');
         $surname = $request->input('surname');
         $email = $request->input('email');
@@ -77,21 +75,18 @@ class AuthController extends Controller
             'id' => 'required|string|max:255',
             'name' => 'required|string|max:255',
         ]);
-        if ($validatedData->fails()) {
-            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
-        }
+        $this->controllerValidateData($validatedData);
         $id = $request->input('id');
         $name = $request->input('name');
         $isAdmin = User::select('isAdmin')->where('name', $name)->get();
         $this->isAnAdmin();
 
         if ($isAdmin[0]->isAdmin === 0) {
-            DB::select('update users set isAdmin = 1 where "' . $id . '"and name = "' . $name . '"');
+            User::where('id', $id )->where('name', $name)->update(['isAdmin' => 1]);
             return response()->json(['message' => 'User is now Administrator'], 200);
         }
-        DB::select('update users set isAdmin = 0 where "' . $id . '"and name = "' . $name . '"');
+        User::where('id', $id )->where('name', $name)->update(['isAdmin' => 0]);
         return response()->json(['message' => 'The user is no longer an administrator'], 200);
-
     }
 
 }

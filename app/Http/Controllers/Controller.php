@@ -35,4 +35,10 @@ class Controller extends BaseController
             return response()->json(['message' => 'You do not have Administrator permissions'], 403);
         }
     }
+
+    public function controllerValidateData($validatedData){
+        if($validatedData->fails()) {
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
+        }
+    }
 }

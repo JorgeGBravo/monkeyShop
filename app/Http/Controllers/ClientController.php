@@ -45,9 +45,7 @@ class ClientController extends Controller
             'surname' => 'required|string|max:255',
             'cif' => 'required|string|min:6|max:255',
         ]);
-        if($validatedData->fails()) {
-            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
-        }
+        $this->controllerValidateData($validatedData);
         $name = $request->input('name');
         $surname = $request->input('surname');
         $cif = $request->input('cif');
@@ -111,10 +109,7 @@ class ClientController extends Controller
             'cif' => 'required|string|min:6|max:255',
             'image' => 'required|image|dimensions:min_width=200,min_height=200',
         ]);
-
-        if ($validatedData->fails()) {
-            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
-        }
+        $this->controllerValidateData($validatedData);
         $cif = $request->input('cif');
         $intoImage = $request->allFiles()['image'];
         $client = Client::all()->where('cif', $cif);
