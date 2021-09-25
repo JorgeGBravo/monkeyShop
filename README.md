@@ -121,7 +121,7 @@ La api tiene un usuario administrador, el cual tendrá las siguientes credencial
 
     . email     => administrator@root.com
     . password  => admin
-
+Nota: Recuerda siempre cambiar el password de administrador.
 ### /api/users/register
 ##### solicitud
 Parámetros:
@@ -157,7 +157,9 @@ Parámetros:
     }
    ````
 
-
+````
+    You do not have Administrator permissions
+````
 ### /api/users/changePassword
 ##### solicitud
 Parámetros:

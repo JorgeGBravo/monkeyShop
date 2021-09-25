@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class Authenticate extends Middleware
@@ -16,8 +17,10 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
+
         if (! $request->expectsJson()) {
-            return "error"; //route('login')
+            $message = response()->json(['message' => 'This Token is not Operative']);
+            abort(401, $message); //route('login')
         }
     }
 }

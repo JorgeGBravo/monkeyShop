@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -39,13 +40,18 @@ class ClientController extends Controller
 
     function newClient(Request $request)
     {
-        $this->getIsAdmin();
+        if (auth()->user()->isAdmin === 0) {
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
+        }
         $validatedData = Validator::make($request->all() ,[
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
             'cif' => 'required|string|min:6|max:255',
         ]);
-        $this->controllerValidateData($validatedData);
+        if ($validatedData->fails()) {
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
+        }
+
         $name = $request->input('name');
         $surname = $request->input('surname');
         $cif = $request->input('cif');
@@ -66,7 +72,9 @@ class ClientController extends Controller
 
     function updateClient(Request $request)
     {
-        $this->getIsAdmin();
+        if (auth()->user()->isAdmin === 0) {
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
+        }
         $cif = $request->input('cif');
         $name = $request->input('name');
         $surname = $request->input('surname');
@@ -91,7 +99,9 @@ class ClientController extends Controller
 
     function deleteClient(Request $request)
     {
-        $this->getIsAdmin();
+        if (auth()->user()->isAdmin === 0) {
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
+        }
         $cif = $request->input('cif');
         $client = Client::all()->where('cif', $cif);
 
@@ -104,12 +114,17 @@ class ClientController extends Controller
 
     function updateImage(Request $request)
     {
-        $this->getIsAdmin();
+        if (auth()->user()->isAdmin === 0) {
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
+        }
         $validatedData = Validator::make($request->all(), [
             'cif' => 'required|string|min:6|max:255',
             'image' => 'required|image|dimensions:min_width=200,min_height=200',
         ]);
-        $this->controllerValidateData($validatedData);
+        if ($validatedData->fails()) {
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
+        }
+
         $cif = $request->input('cif');
         $intoImage = $request->allFiles()['image'];
         $client = Client::all()->where('cif', $cif);

@@ -16,7 +16,10 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $this->isAnAdmin();
+        if (auth()->user()->isAdmin === 0) {
+            log::info('in if');
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
+        }
         $validatedData = Validator::make($request->all() ,[
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
@@ -24,7 +27,10 @@ class AuthController extends Controller
             'password' => 'required|string|min:8',
             'isAdmin' => 'nullable|bool',
         ]);
-        $this->controllerValidateData($validatedData);
+        if ($validatedData->fails()) {
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
+        }
+
         $name = $request->input('name');
         $surname = $request->input('surname');
         $email = $request->input('email');
@@ -71,15 +77,21 @@ class AuthController extends Controller
 
     public function changeIsAdmin(Request $request)
     {
+        if (auth()->user()->isAdmin === 0) {
+            log::info('in if');
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
+        }
         $validatedData = Validator::make($request->all(), [
             'id' => 'required|string|max:255',
             'name' => 'required|string|max:255',
         ]);
-        $this->controllerValidateData($validatedData);
+        if ($validatedData->fails()) {
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
+        }
+
         $id = $request->input('id');
         $name = $request->input('name');
         $isAdmin = User::select('isAdmin')->where('name', $name)->get();
-        $this->isAnAdmin();
 
         if ($isAdmin[0]->isAdmin === 0) {
             User::where('id', $id )->where('name', $name)->update(['isAdmin' => 1]);
