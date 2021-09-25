@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\User;
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
+
     function getAllClients()
     {
         return response()->json(Client::all(), 200);
@@ -43,10 +45,7 @@ class ClientController extends Controller
 
     function newClient(Request $request)
     {
-        if (auth()->user()->isAdmin === 0) {
-            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
-        }
-
+        $this->onlyAdmin();
         $validatedData = Validator::make($request->all() ,[
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
@@ -72,10 +71,7 @@ class ClientController extends Controller
 
     function updateClient(Request $request)
     {
-        if (auth()->user()->isAdmin === 0) {
-            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
-        }
-
+        $this->onlyAdmin();
         $cif = $request->input('cif');
         $name = strtolower($request->input('name'));
         $surname = strtolower($request->input('surname'));
@@ -102,10 +98,7 @@ class ClientController extends Controller
 
     function deleteClient(Request $request)
     {
-        if (auth()->user()->isAdmin === 0) {
-            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
-        }
-
+        $this->onlyAdmin();
         $client = Client::where('cif', $request->input('cif'))->get();
         if (count($client) != 0) {
             Client::where('cif', $request->input('cif'))->delete();
@@ -117,10 +110,7 @@ class ClientController extends Controller
 
     function updateImage(Request $request)
     {
-        if (auth()->user()->isAdmin === 0) {
-            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
-        }
-
+        $this->onlyAdmin();
         $validatedData = Validator::make($request->all(), [
             'cif' => 'required|string|min:6|max:255',
             'image' => 'required|image|dimensions:min_width=200,min_height=200',
@@ -172,4 +162,12 @@ class ClientController extends Controller
         $urlExplode[3] = $pathSource;
         return implode('/', $urlExplode);
     }
+
+    public function onlyAdmin()
+    {
+        if (auth()->user()->isAdmin === 0) {
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
+        }
+    }
+
 }

@@ -14,12 +14,11 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+
+
     public function register(Request $request)
     {
-        if (auth()->user()->isAdmin === 0) {
-            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
-        }
-
+        $this->onlyAdmin();
         $validatedData = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
@@ -71,10 +70,7 @@ class AuthController extends Controller
 
     public function changeIsAdmin(Request $request)
     {
-        if (auth()->user()->isAdmin === 0) {
-            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
-        }
-
+        $this->onlyAdmin();
         $validatedData = Validator::make($request->all(), [
             'id' => 'required|string|max:255',
             'name' => 'required|string|max:255',
@@ -91,6 +87,13 @@ class AuthController extends Controller
 
         User::where('id', $request->input('id'))->where('name', strtolower($request->input('name')))->update(['isAdmin' => 0]);
         return response()->json(['message' => 'The user is no longer an administrator'], 200);
+    }
+
+    public function onlyAdmin()
+    {
+        if (auth()->user()->isAdmin === 0) {
+            return response()->json(['message' => 'You do not have Administrator permissions'], 403);
+        }
     }
 
 }
