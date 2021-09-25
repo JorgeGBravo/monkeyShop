@@ -72,7 +72,7 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Updated Password'], 200);
             }
         }
-        return response()->json(['message' => 'You are not a registered user, your token is not in the system.'], 403);
+        return response()->json(['message' => 'You are not a registered user'], 403);
     }
 
     public function changeIsAdmin(Request $request)

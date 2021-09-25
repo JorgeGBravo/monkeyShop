@@ -82,19 +82,19 @@ class ClientController extends Controller
 
         if (count($client) != 0) {
             if ((isset($name)) && isset($surname)) {
-                Client::where('cif', $cif)->updated(['name' => $name, 'surname' => $surname, 'lastUserWhoModifiedTheField' => Auth::id()]);
+                Client::where('cif', $cif)->update(['name' => $name, 'surname' => $surname, 'lastUserWhoModifiedTheField' => Auth::id()]);
                 return response()->json(Client::all()->where('cif', $cif), 201);
             }
             if (isset($name)) {
-                Client::where('cif', $cif)->updated(['name' => $name, 'lastUserWhoModifiedTheField' => Auth::id()]);
+                Client::where('cif', $cif)->update(['name' => $name, 'lastUserWhoModifiedTheField' => Auth::id()]);
                 return response()->json(Client::all()->where('cif', $cif), 201);
             }
             if (isset($surname)) {
-                Client::where('cif', $cif)->updated(['surname' => $surname, 'lastUserWhoModifiedTheField' => Auth::id()]);
+                Client::where('cif', $cif)->update(['surname' => $surname, 'lastUserWhoModifiedTheField' => Auth::id()]);
                 return response()->json(Client::all()->where('cif', $cif), 201);
             }
         }
-        return response()->json(['message' => $cif.'no exist' ], 409);
+        return response()->json(['message' =>'The client with cif: '.$cif.' does not exist' ], 409);
     }
 
     function deleteClient(Request $request)
@@ -103,11 +103,11 @@ class ClientController extends Controller
             return response()->json(['message' => 'You do not have Administrator permissions'], 403);
         }
         $cif = $request->input('cif');
-        $client = Client::all()->where('cif', $cif);
+        $client = Client::where('cif', $cif)->get();
 
         if (count($client) != 0) {
             Client::where('cif', $cif)->delete();
-            return response()->json(['message' => 'the user has been deleted'], 200);
+            return response()->json(['message' => 'The user has been deleted'], 200);
         }
         return response()->json(['message' => 'User not exist'], 404);
     }
@@ -146,9 +146,9 @@ class ClientController extends Controller
             $path = $intoImage->store('public/images');      // save image in images
             $newUrlPath = $this->parseUrlImage($path);
             Client::where('cif', $cif)->update(['image' => env('APP_URL') . '/' . $newUrlPath, 'lastUserWhoModifiedTheField' => Auth::id()]);
-            return response()->json(['message' => 'Updated image', 'image' => env('APP_URL') . '/' . $newUrlPath], 200);
+            return response()->json(['message' => 'Update image', 'image' => env('APP_URL') . '/' . $newUrlPath], 200);
         }
-        return response()->json(['message' => 'User with cif:' . $cif . ', does not exist'], 409);
+        return response()->json(['message' => 'User with cif: ' . $cif . ', does not exist'], 409);
     }
 
     function parseUrlImage($path)

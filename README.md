@@ -156,10 +156,18 @@ Parámetros:
     "id":3
     }
    ````
-
 ````
-    You do not have Administrator permissions
+    {
+    "message": "The email has already been taken."
+    }
 ````
+````
+    {
+    "message": "The email has already been taken."
+    }
+````
+    
+    
 ### /api/users/changePassword
 ##### solicitud
 Parámetros:
@@ -180,9 +188,14 @@ Además de los datos el usuario deberá estar autenticado.
 Podremos recibir varios resultados:
 
 ````
-Updated Password
-        o
-You are not a registered user, your token is not in the system
+{
+"mesage": "Updated Password"
+}
+````
+````
+{
+"message": "You are not a registered user"
+}
 ````
 
 
@@ -204,20 +217,29 @@ Solo los usuarios administradores autentificados tienen poder de cambio.
 ````
 ##### respuesta
 Podremos recibir varios resultados:
+````
+{
+"mesage": "User is now Administrator"
+}
+````
+````
+{
+"mesage": "The user is no longer an administrator"
+}
+````
+````
+{
+"mesage": "Only administrators can make that query"
+}
+````
 
-````
-    User is now Administrator
-                o
-    The user is no longer an administrator
-                o
-    Only administrators can make that query
-````
 
 
 ### /api/users/user
 ##### solicitud
 **[[get]]()** http://www.monkeyShop.com/api/users/user
 
+respuesta
 
   ````
   {
@@ -252,14 +274,21 @@ Requiere el uso de al menos un dato.
     }
 ````
 ##### respuesta
-
-    New registered customer 
-                o
-    Already registered customer
-                o
-    You do not have Administrator permissions
-
-
+````
+{
+"mesage": "New registered customer"
+}
+````
+````
+{
+"mesage": "Already registered customer"
+}
+````
+````
+{
+"mesage": "You do not have Administrator permissions"
+}
+```` 
 
 ### /api/clients/list
 ##### solicitud
@@ -269,28 +298,28 @@ Requiere el uso de al menos un dato.
 
 
 ````[
-    {
-    "idClient": 1,
-    "name": "Tomas",
-    "surname": "surname",
-    "cif": "fFNE1q6MEH",
-    "image": null,
-    "idUser": "3",
-    "mCIdUser": "4",
-    "created_at": null,
-    "updated_at": null
-    },
-    {
-    "idClient": 2,
-    "name": "Jennifer",
-    "surname": "surname",
-    "cif": "NTsu2qO2Bg",
-    "image": null,
-    "idUser": "5",
-    "mCIdUser": "7",
-    "created_at": null,
-    "updated_at": null
-    },...
+        {
+            "idClient": 1,
+            "name": "Tomas",
+            "surname": "surname",
+            "cif": "fFNE1q6MEH",
+            "image": null,
+            "idUser": "3",
+            "mCIdUser": "4",
+            "created_at": null,
+            "updated_at": null
+        },
+        {
+            "idClient": 2,
+            "name": "Jennifer",
+            "surname": "surname",
+            "cif": "NTsu2qO2Bg",
+            "image": null,
+            "idUser": "5",
+            "mCIdUser": "7",
+            "created_at": null,
+            "updated_at": null
+        },...
     ]
 ````
 
@@ -307,9 +336,9 @@ Parámetros:
 
 ````    
     {
-    "cif":"cif",
-    "name":"name",
-    "surname":"surname"
+        "cif":"cif",
+        "name":"name",
+        "surname":"surname"
     }
 ````
 
@@ -317,17 +346,17 @@ Parámetros:
 Devuelve el cliente según el dato aportado.
   ````
   [
-  {
-  "idClient": 11,
-  "name": "name",
-  "surname": "surname",
-  "cif": "cif",
-  "image": "public/storage/09HKpiNoqaISPLA9JIqamxFZ3m1HITVupDhLVCmh.jpg",
-  "idUser": "1",
-  "mCIdUser": "1",
-  "created_at": "2021-08-20 09:34:49",
-  "updated_at": "2021-08-20 09:34:49"
-  }
+      {
+      "idClient": 11,
+      "name": "name",
+      "surname": "surname",
+      "cif": "cif",
+      "image": "public/storage/09HKpiNoqaISPLA9JIqamxFZ3m1HITVupDhLVCmh.jpg",
+      "idUser": "1",
+      "mCIdUser": "1",
+      "created_at": "2021-08-20 09:34:49",
+      "updated_at": "2021-08-20 09:34:49"
+      }
   ]
   ````
 
@@ -343,19 +372,34 @@ Parámetros:
 
 ````    
     {
-    "cif":"cif",  //el cif se toma siempre como referencia para la actualizacion
-    "name":"name",
-    "surname":"surname",
+        "cif":"cif",  //el cif se toma siempre como referencia para la actualizacion
+        "name":"name",
+        "surname":"surname",
     }
 ````
 ##### respuesta
-Podremos recibir varios resultados:
 
-- ````You do not have Administrator permissions````
-- ````Update Client CIF: cif new name: name and surname: surname```` 
-- ````the client with cif: cif does not exist```` 
+````
+{
+    "2": {
+        "idClient": id,
+        "name": "name",
+        "surname": "surname",
+        "cif": "T4DzCcMP0W",
+        "image": image,
+        "idUser": "10",
+        "lastUserWhoModifiedTheField": "1",
+        "created_at": null,
+        "updated_at": "2021-09-25T11:47:10.000000Z"
+    }
+}
+````
+````
+{
+    "mesage": "The client with cif: cif does not exist"
+}
+````
 
-Este tipo de mensaje lo recibiremos dependiendo que dato hayamos enviado.
 
 
 
@@ -372,11 +416,24 @@ Se adjuntará a la petición el archivo *.jpg *.png con dimensiones:min_width=20
 **[[post]]()** http://www.monkeyShop.com/api/clients/updateImageClient 
 
 ##### respuesta
-    Image entered
-         o
-    Updated image
-         o
-    User with cif:' . $cif . ', does not exist
+
+````
+{
+    "message": "Image entered",
+    "image": "http://127.0.0.1:8000/storage/images/U7BlAvHx89LdXye7wAbjWSopUGHrSkN3MniVFqIF.jpg"
+}
+```` 
+````
+{
+    "message": "Update image",
+    "image": "http://127.0.0.1:8000/storage/images/U7BlAvHx89LdXye7wAbjWSopUGHrSkN3MniVFqIF.jpg"
+}
+```` 
+````
+{
+    "mesage": " User with cif:' . $cif . ', does not exist"
+}
+```` 
 
 ### /api/clients/deleteClient
 ##### solicitud
@@ -388,18 +445,22 @@ Sólo un usuario con rol de administrador y autenticado puede ejecutarlo
 - **[[post]]()** http://www.monkeyShop.com/api/clients/deleteClient
 ````
 {
-"cif": "cif"
+    "cif": "cif"
 }
 ````
 ##### respuesta
 Podremos recibir varios resultados:
 
 ````
-You do not have Administrator permissions
-            o
-the user has been deleted
+{
+"mesage": "The user has been deleted"
+}
 ````
-
+````
+{
+"mesage": "User not exist"
+}
+````
 
 
 ## Seguridad
