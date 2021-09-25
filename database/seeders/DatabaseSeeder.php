@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
-
     static $users = [
         'Jorge',
         'Jennifer',
@@ -44,27 +43,26 @@ class DatabaseSeeder extends Seeder
      * @return void
      * @throws \Exception
      */
+
     public function run()
     {
         foreach (self::$users as $user) {
             DB::table('users')->insert([
-                'name' => $user,
-                'surname' => 'surname',
+                'name' => strtolower($user),
+                'surname' => strtolower('Surname'),
                 'email' => strtolower($user) . '@gmail.com',
                 'password' => Hash::make('password'),
             ]);
         }
 
         foreach (self::$names as $name) {
-
             DB::table('clients')->insert([
-                'name' => $name,
-                'surname' => 'surname',
+                'name' => strtolower($name),
+                'surname' => strtolower('Surname'),
                 'cif' => Str::random(10),
                 'idUser' => random_int(1, 10),
                 'lastUserWhoModifiedTheField' => random_int(1, 10),
             ]);
-
         }
     }
 }
