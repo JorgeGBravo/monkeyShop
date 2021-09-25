@@ -58,7 +58,7 @@ class AuthController extends Controller
             ->where('email', '=', strtolower($request->input('email')))
             ->where('id', '=', Auth::id());
         if (count($user) != 0) {
-            if ($user[$this->arrayPositionAuth()]->email === strtolower($request->input('email'))) {
+            if ($user[Auth::id() - 1]->email === strtolower($request->input('email'))) {
                 DB::table('users')
                     ->where('id', Auth::id())
                     ->update(['password' => Hash::make($request->input('newPassword'))]);

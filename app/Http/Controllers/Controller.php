@@ -13,12 +13,4 @@ use Illuminate\Support\Facades\Log;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
-
-    public function arrayPositionAuth()
-    {
-        $position = Auth::id() - 1;
-        return $position;
-    }
-
 }
