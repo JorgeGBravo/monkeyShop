@@ -53,18 +53,17 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-        $user = User::get()
-            ->where('email', '=', strtolower($request->input('email')))
-            ->where('id', '=', Auth::id());
+        $user = User::where('email', '=', strtolower($request->input('email')))
+            ->where('id', '=', Auth::id())
+            ->get();
         if (count($user) != 0) {
-            if ($user[Auth::id() - 1]->email === strtolower($request->input('email'))) {
-                DB::table('users')
-                    ->where('id', Auth::id())
-                    ->update(['password' => Hash::make($request->input('newPassword'))]);
+            if ($user[0]->email === strtolower($request->input('email')))
+            {
+                $user[0]->password = Hash::make($request->input('newPassword'));
+                $user[0]->save();
                 return response()->json(['message' => 'Updated Password'], 200);
             }
         }
-
         return response()->json(['message' => 'You are not a registered user'], 403);
     }
 
@@ -79,14 +78,18 @@ class AuthController extends Controller
             return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
         }
 
-        $isAdmin = User::select('isAdmin')->where('name', strtolower($request->input('name')))->get();
-        if ($isAdmin[0]->isAdmin === 0) {
-            User::where('id', $request->input('id'))->where('name', strtolower($request->input('name')))->update(['isAdmin' => 1]);
-            return response()->json(['message' => 'User is now Administrator'], 200);
+        $user = User::where('id', $request->input('id'))->where('name', strtolower($request->input('name')))->get();
+        if (count($user) != 0) {
+            ($user[0]->isAdmin === 0) ? $user[0]->isAdmin = 1 : $user[0]->isAdmin = 0;
+            $user[0]->save();
+            if ($user[0]->isAdmin === 1) {
+                return response()->json(['message' => 'User is now Administrator'], 200);
+            }
+
+            return response()->json(['message' => 'The user is no longer an administrator'], 200);
         }
 
-        User::where('id', $request->input('id'))->where('name', strtolower($request->input('name')))->update(['isAdmin' => 0]);
-        return response()->json(['message' => 'The user is no longer an administrator'], 200);
+        return response()->json(['message' => 'There is no user with these credentials'], 400);
     }
 
     public function onlyAdmin()
