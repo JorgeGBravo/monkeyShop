@@ -66,30 +66,40 @@ class ClientController extends Controller
             $data->save();
             return response()->json(['user' => $data], 201);
         }
-        return response()->json(['message' => 'Already registered customer'], 409);
+        return response()->json([$client, 'message' => 'Already registered customer'], 409);
     }
 
     function updateClient(Request $request)
     {
         $this->onlyAdmin();
         $cif = $request->input('cif');
-        $name = strtolower($request->input('name'));
-        $surname = strtolower($request->input('surname'));
-        $client = Client::all()->where('cif', $cif);
+        $name = $request->input('name');
+        $surname = $request->input('surname');
+        $client = Client::where('cif', $cif)->get();
+
+        log::info($client);
+        log::info('esta  '. isset($surname));
         if (count($client) != 0) {
             if ((isset($name)) && isset($surname)) {
-                Client::where('cif', $cif)->update(['name' => $name, 'surname' => $surname, 'lastUserWhoModifiedTheField' => Auth::id()]);
-                return response()->json(Client::all()->where('cif', $cif), 201);
+                $client[0]->name = strtolower($request->input('name'));;
+                $client[0]->surname = strtolower($request->input('surname'));
+                $client[0]->lastUserWhoModifiedTheField = Auth::id();
+                $client[0]->save();
+                return response()->json($client, 201);
             }
 
             if (isset($name)) {
-                Client::where('cif', $cif)->update(['name' => $name, 'lastUserWhoModifiedTheField' => Auth::id()]);
-                return response()->json(Client::all()->where('cif', $cif), 201);
+                $client[0]->name = strtolower($request->input('name'));;
+                $client[0]->lastUserWhoModifiedTheField = Auth::id();
+                $client[0]->save();
+                return response()->json($client, 201);
             }
 
             if (isset($surname)) {
-                Client::where('cif', $cif)->update(['surname' => $surname, 'lastUserWhoModifiedTheField' => Auth::id()]);
-                return response()->json(Client::all()->where('cif', $cif), 201);
+                $client[0]->surname = strtolower($request->input('surname'));
+                $client[0]->lastUserWhoModifiedTheField = Auth::id();
+                $client[0]->save();
+                return response()->json($client, 201);
             }
         }
 
@@ -101,7 +111,7 @@ class ClientController extends Controller
         $this->onlyAdmin();
         $client = Client::where('cif', $request->input('cif'))->get();
         if (count($client) != 0) {
-            Client::where('cif', $request->input('cif'))->delete();
+            $client[0]->delete();
             return response()->json(['message' => 'The user has been deleted'], 200);
         }
 
@@ -121,7 +131,7 @@ class ClientController extends Controller
 
         $cif = $request->input('cif');
         $intoImage = $request->allFiles()['image'];
-        $client = Client::all()->where('cif', $cif);
+        $client = Client::where('cif', $cif)->get();
         if (count($client) != 0) {
             foreach ($client as $info) {
                 $infoClient = $info;
@@ -131,7 +141,10 @@ class ClientController extends Controller
             if ($imageClient == null) {
                 $path = $intoImage->store('public/images');      // save image in images
                 $newUrlPath = $this->parseUrlImage($path);
-                Client::where('cif', $cif)->update(['image' => env('APP_URL') . '/' . $newUrlPath, 'lastUserWhoModifiedTheField' => Auth::id()]);
+                $client[0]->image = env('APP_URL') . '/' . $newUrlPath;
+                $client[0]->lastUserWhoModifiedTheField = Auth::id();
+                $client[0]->save();
+               // Client::where('cif', $cif)->update(['image' => env('APP_URL') . '/' . $newUrlPath, 'lastUserWhoModifiedTheField' => Auth::id()]);
                 return response()->json(['message' => 'Image entered', 'image' => env('APP_URL') . '/' . $newUrlPath], 200);
             }
 
@@ -139,7 +152,10 @@ class ClientController extends Controller
             Storage::delete($newPathImage);
             $path = $intoImage->store('public/images');      // save image in images
             $newUrlPath = $this->parseUrlImage($path);
-            Client::where('cif', $cif)->update(['image' => env('APP_URL') . '/' . $newUrlPath, 'lastUserWhoModifiedTheField' => Auth::id()]);
+            $client[0]->image = env('APP_URL') . '/' . $newUrlPath;
+            $client[0]->lastUserWhoModifiedTheField = Auth::id();
+            $client[0]->save();
+            //Client::where('cif', $cif)->update(['image' => env('APP_URL') . '/' . $newUrlPath, 'lastUserWhoModifiedTheField' => Auth::id()]);
             return response()->json(['message' => 'Update image', 'image' => env('APP_URL') . '/' . $newUrlPath], 200);
         }
 
