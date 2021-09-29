@@ -34,14 +34,12 @@ Route::middleware('auth:sanctum')->post('/clients/updateImageClient', [ClientCon
 Route::middleware('auth:sanctum')->post('/users/changeRole', [AuthController::class, 'changeIsAdmin']);
 
 
-
-
 /* ------------------------------ Get Routes ---------------------------------*/
 
 
-
-
-Route::middleware('auth:sanctum')->get('/users/user', function (Request $request){ return $request->user(); });
+Route::middleware('auth:sanctum')->get('/users/user', function (Request $request) {
+    return $request->user();
+});
 
 Route::middleware('auth:sanctum')->get('/clients/list', [ClientController::class, 'getAllClients']);
 

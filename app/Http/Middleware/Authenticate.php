@@ -12,15 +12,15 @@ class Authenticate extends Middleware
     /**
      * Get the path the user should be redirected to when they are not authenticated.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return string|null
      */
     protected function redirectTo($request)
     {
 
-        if (! $request->expectsJson()) {
+        if (!$request->expectsJson()) {
             $message = response()->json(['message' => 'This Token is not Operative']);
-            abort(401, $message); //route('login')
+            abort(401, $message);
         }
     }
 }

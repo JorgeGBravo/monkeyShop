@@ -77,8 +77,6 @@ class ClientController extends Controller
         $surname = $request->input('surname');
         $client = Client::where('cif', $cif)->get();
 
-        log::info($client);
-        log::info('esta  '. isset($surname));
         if (count($client) != 0) {
             if ((isset($name)) && isset($surname)) {
                 $client[0]->name = strtolower($request->input('name'));;
@@ -102,7 +100,6 @@ class ClientController extends Controller
                 return response()->json($client, 201);
             }
         }
-
         return response()->json(['message' =>'The client with cif: '.$cif.' does not exist' ], 409);
     }
 
@@ -114,7 +111,6 @@ class ClientController extends Controller
             $client[0]->delete();
             return response()->json(['message' => 'The user has been deleted'], 200);
         }
-
         return response()->json(['message' => 'User not exist'], 404);
     }
 
@@ -144,7 +140,6 @@ class ClientController extends Controller
                 $client[0]->image = env('APP_URL') . '/' . $newUrlPath;
                 $client[0]->lastUserWhoModifiedTheField = Auth::id();
                 $client[0]->save();
-               // Client::where('cif', $cif)->update(['image' => env('APP_URL') . '/' . $newUrlPath, 'lastUserWhoModifiedTheField' => Auth::id()]);
                 return response()->json(['message' => 'Image entered', 'image' => env('APP_URL') . '/' . $newUrlPath], 200);
             }
 
@@ -155,10 +150,8 @@ class ClientController extends Controller
             $client[0]->image = env('APP_URL') . '/' . $newUrlPath;
             $client[0]->lastUserWhoModifiedTheField = Auth::id();
             $client[0]->save();
-            //Client::where('cif', $cif)->update(['image' => env('APP_URL') . '/' . $newUrlPath, 'lastUserWhoModifiedTheField' => Auth::id()]);
             return response()->json(['message' => 'Update image', 'image' => env('APP_URL') . '/' . $newUrlPath], 200);
         }
-
         return response()->json(['message' => 'User with cif: ' . $cif . ', does not exist'], 409);
     }
 

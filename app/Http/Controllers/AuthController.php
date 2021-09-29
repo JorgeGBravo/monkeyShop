@@ -85,7 +85,6 @@ class AuthController extends Controller
             if ($user[0]->isAdmin === 1) {
                 return response()->json(['message' => 'User is now Administrator'], 200);
             }
-
             return response()->json(['message' => 'The user is no longer an administrator'], 200);
         }
 
