@@ -276,12 +276,34 @@ Requiere el uso de al menos un dato.
 ##### respuesta
 ````
 {
-"mesage": "New registered customer"
+    "user": {
+        "name": "prueba",
+        "surname": "prueba",
+        "cif": "prueba",
+        "idUser": 1,
+        "lastUserWhoModifiedTheField": 1,
+        "updated_at": "2021-09-29T14:28:44.000000Z",
+        "created_at": "2021-09-29T14:28:44.000000Z",
+        "id": 12
+    }
 }
 ````
 ````
 {
-"mesage": "Already registered customer"
+    "0": {
+        "10": {
+            "id": 12,
+            "name": "prueba",
+            "surname": "prueba",
+            "cif": "prueba",
+            "image": null,
+            "idUser": "1",
+            "lastUserWhoModifiedTheField": "1",
+            "created_at": "2021-09-29T14:28:44.000000Z",
+            "updated_at": "2021-09-29T14:28:44.000000Z"
+        }
+    },
+    "message": "Already registered customer"
 }
 ````
 ````
