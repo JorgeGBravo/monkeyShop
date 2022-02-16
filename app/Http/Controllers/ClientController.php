@@ -46,11 +46,7 @@ class ClientController extends Controller
     function newClient(Request $request)
     {
         $this->onlyAdmin();
-        $validatedData = Validator::make($request->all() ,[
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'cif' => 'required|string|min:6|max:255',
-        ]);
+        $validatedData = (new ValidateDataController())->newClientValidateData($request);
         if ($validatedData->fails()) {
             return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
         }
@@ -72,6 +68,10 @@ class ClientController extends Controller
     function updateClient(Request $request)
     {
         $this->onlyAdmin();
+        $validatedData = (new ValidateDataController())->updateClientValidateData($request);
+        if ($validatedData->fails()) {
+            return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
+        }
         $cif = $request->input('cif');
         $name = $request->input('name');
         $surname = $request->input('surname');
@@ -117,14 +117,10 @@ class ClientController extends Controller
     function updateImage(Request $request)
     {
         $this->onlyAdmin();
-        $validatedData = Validator::make($request->all(), [
-            'cif' => 'required|string|min:6|max:255',
-            'image' => 'required|image|dimensions:min_width=200,min_height=200',
-        ]);
+        $validatedData = (new ValidateDataController())->updateImageValidateData($request);
         if ($validatedData->fails()) {
             return response()->json(['message' => $validatedData->getMessageBag()->first()], 400);
         }
-
         $cif = $request->input('cif');
         $intoImage = $request->allFiles()['image'];
         $client = Client::where('cif', $cif)->get();
